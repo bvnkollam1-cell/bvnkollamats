@@ -1,0 +1,2901 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>BVN Kollam Athletic Meet</title>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────────────── */
+:root{
+  --gold:#f9c642;--gold2:#fdd879;--gold-dim:rgba(249,198,66,.2);
+  --teal:#0dd6cf;--teal2:#3df0e9;
+  --ink:#06101e;--surf:#0c1a30;--card:#112038;--card2:#172848;
+  --bdr:rgba(255,255,255,.13);--bdr2:rgba(249,198,66,.32);
+  --txt:#f4f8ff;--txt2:#a8c0d8;--txt3:#d4e2f4;
+  --red:#ff4d6d;--green:#2ee89a;--blue:#5b9ef5;--warn:#f5a420;
+  --nav-h:64px;
+  --r:14px;--r-lg:20px;
+  --sh:0 8px 32px rgba(0,0,0,.45);
+  --glow:0 0 50px rgba(249,198,66,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:15px}
+body{font-family:'DM Sans',sans-serif;background:var(--ink);color:var(--txt);
+  min-height:100vh;overflow-x:hidden;padding-top:var(--nav-h)}
+
+/* ── BG MESH ── */
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%,rgba(249,198,66,.1),transparent),
+    radial-gradient(ellipse 60% 80% at 90% 100%,rgba(13,214,207,.1),transparent),
+    radial-gradient(ellipse 50% 50% at 50% 100%,rgba(91,158,245,.06),transparent),
+    linear-gradient(160deg,#06101e 0%,#0c1a30 50%,#09162a 100%);
+  pointer-events:none}
+body::after{content:'';position:fixed;inset:0;z-index:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.012'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events:none;opacity:.4}
+
+/* ═══ STICKY NAV ═══════════════════════════════ */
+#stickyNav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:var(--nav-h);
+  background:rgba(6,16,30,.88);
+  backdrop-filter:blur(20px) saturate(180%);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:1px solid rgba(249,198,66,.15);
+  display:flex;align-items:center;
+  transition:all .4s ease;
+}
+#stickyNav.scrolled{
+  background:rgba(6,16,30,.98);
+  box-shadow:0 4px 30px rgba(0,0,0,.5),0 1px 0 rgba(249,198,66,.2);
+}
+.nav-inner{
+  max-width:1320px;margin:0 auto;padding:0 20px;
+  width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-brand .medal{font-size:1.6rem;filter:drop-shadow(0 0 8px rgba(212,168,67,.5))}
+.nav-brand span{font-family:'Cormorant Garant',serif;font-size:1.2rem;font-weight:700;
+  color:var(--gold);letter-spacing:.5px;white-space:nowrap}
+.nav-links{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nl{padding:8px 16px;border-radius:99px;font-size:.8rem;font-weight:600;
+  cursor:pointer;transition:all .25s ease;border:none;font-family:'DM Sans',sans-serif;
+  text-transform:uppercase;letter-spacing:.6px;white-space:nowrap}
+.nl-ghost{background:transparent;color:var(--txt2);border:1px solid transparent}
+.nl-ghost:hover{background:var(--gold-dim);color:var(--gold);border-color:var(--bdr2)}
+.nl-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;font-weight:700;
+  box-shadow:0 4px 14px rgba(212,168,67,.3)}
+.nl-gold:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(212,168,67,.4)}
+.nl-outline{background:transparent;color:var(--gold);border:1.5px solid var(--bdr2)}
+.nl-outline:hover{background:var(--gold-dim)}
+#navUser{display:none;align-items:center;gap:8px;margin-left:8px}
+.user-badge{background:var(--card2);border:1px solid var(--bdr2);border-radius:99px;
+  padding:6px 14px;font-size:.8rem;color:var(--gold);font-weight:600}
+.logout-btn{padding:7px 14px;background:rgba(244,63,94,.15);color:#f43f5e;
+  border:1px solid rgba(244,63,94,.3);border-radius:99px;font-size:.8rem;font-weight:600;
+  cursor:pointer;transition:all .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;
+  text-transform:uppercase;letter-spacing:.5px}
+.logout-btn:hover{background:rgba(244,63,94,.25);transform:translateY(-1px)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;
+  background:none;border:none}
+.hamburger span{display:block;width:22px;height:2px;background:var(--txt2);border-radius:2px;
+  transition:all .3s ease}
+@media(max-width:768px){
+  .nav-links{display:none;position:absolute;top:var(--nav-h);left:0;right:0;
+    flex-direction:column;background:rgba(6,16,30,.98);padding:16px;
+    border-bottom:1px solid var(--bdr);gap:8px}
+  .nav-links.open{display:flex}
+  .hamburger{display:flex}
+  .nav-brand span{font-size:1rem}
+  #navUser{display:none!important}
+  #mobileLogout{display:none}
+  #mobileLogout.show{display:flex!important}
+}
+
+/* ═══ LOADING ═══════════════════════════════════ */
+#overlay{position:fixed;inset:0;background:rgba(8,12,22,.98);z-index:9999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px}
+#overlay.off{animation:fadeOut .5s ease forwards}
+@keyframes fadeOut{to{opacity:0;pointer-events:none;display:none}}
+.spin-ring{width:60px;height:60px;position:relative}
+.spin-ring::before,.spin-ring::after{content:'';position:absolute;inset:0;border-radius:50%}
+.spin-ring::before{border:3px solid rgba(212,168,67,.12)}
+.spin-ring::after{border:3px solid transparent;border-top-color:var(--gold);
+  animation:spin .85s cubic-bezier(.42,0,.58,1) infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#ldTxt{font-family:'Cormorant Garant',serif;color:var(--gold);font-size:1.4rem;font-weight:700}
+#ldSub{color:var(--txt2);font-size:.9rem}
+#errBox{display:none;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.4);
+  border-radius:16px;padding:28px 36px;max-width:460px;text-align:center}
+#errBox h3{color:#fb7185;margin-bottom:10px;font-family:'Cormorant Garant',serif;font-size:1.3rem}
+#errBox p{color:var(--txt2);font-size:.9rem;line-height:1.7}
+
+/* ═══ TOAST ═══════════════════════════════════ */
+#toast{position:fixed;bottom:28px;right:28px;z-index:8000;
+  background:linear-gradient(135deg,rgba(16,185,129,.95),rgba(14,165,160,.95));
+  color:#fff;padding:14px 22px;border-radius:12px;font-weight:600;font-size:.88rem;
+  display:none;box-shadow:0 12px 30px rgba(0,0,0,.3);
+  animation:toastIn .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes toastIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ═══ WRAP ════════════════════════════════════ */
+.wrap{max-width:1320px;margin:0 auto;padding:28px 20px;position:relative;z-index:1}
+
+/* ═══ HERO ════════════════════════════════════ */
+.hero{
+  background:linear-gradient(135deg,rgba(17,32,56,.95),rgba(23,40,72,.95));
+  border:1px solid var(--bdr2);border-radius:24px;
+  padding:64px 40px;text-align:center;margin-bottom:36px;
+  box-shadow:var(--sh),var(--glow);
+  position:relative;overflow:hidden;
+  animation:heroIn .8s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes heroIn{from{opacity:0;transform:translateY(-32px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.hero::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% -20%,rgba(249,198,66,.18),transparent 60%);
+  pointer-events:none}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.3);
+  color:var(--gold);padding:7px 18px;border-radius:99px;
+  font-size:.78rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
+  margin-bottom:20px}
+.hero h1{font-family:'Cormorant Garant',serif;font-size:clamp(2.4rem,6vw,4rem);
+  font-weight:700;color:transparent;
+  background:linear-gradient(135deg,#fff 20%,var(--gold) 60%,var(--gold2) 100%);
+  -webkit-background-clip:text;background-clip:text;
+  letter-spacing:-1px;margin-bottom:10px;line-height:1.15}
+.hero .tagline{color:var(--txt2);font-size:1.05rem;font-weight:300;letter-spacing:.5px;margin-bottom:28px}
+.live-chip{display:inline-flex;align-items:center;gap:8px;
+  background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.35);
+  color:#34d399;padding:8px 20px;border-radius:99px;
+  font-size:.8rem;font-weight:700;letter-spacing:.5px;margin-bottom:28px}
+.pulse{width:9px;height:9px;background:#34d399;border-radius:50%;
+  box-shadow:0 0 0 0 rgba(52,211,153,.5);animation:pulseAnim 2s ease-in-out infinite}
+@keyframes pulseAnim{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.5)}50%{box-shadow:0 0 0 8px rgba(52,211,153,0)}}
+.hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ═══ GLASS CARD ══════════════════════════════ */
+.card{
+  background:linear-gradient(145deg,rgba(17,32,56,.92),rgba(14,27,48,.92));
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid var(--bdr);border-radius:var(--r-lg);
+  padding:28px;margin-bottom:24px;box-shadow:var(--sh);
+  transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;
+  position:relative;overflow:hidden;
+}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(249,198,66,.4),transparent);opacity:0;
+  transition:opacity .3s}
+.card:hover::before{opacity:1}
+.card.sec{display:none}
+.card.sec.on{display:block;animation:cardIn .45s cubic-bezier(.22,1,.36,1) both}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* ═══ SECTION HEADING ═════════════════════════ */
+.sh{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:16px;
+  border-bottom:1px solid var(--bdr)}
+.sh h2{font-family:'Cormorant Garant',serif;font-size:1.7rem;font-weight:700;
+  color:var(--txt);flex:1}
+.sh h2 em{color:var(--gold);font-style:normal}
+.sync-pill{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;padding:4px 12px;
+  border-radius:99px;background:rgba(59,130,246,.12);color:#60a5fa;
+  border:1px solid rgba(59,130,246,.25)}
+
+/* ═══ INPUTS ══════════════════════════════════ */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:.8rem;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:7px}
+input,select,textarea{
+  width:100%;padding:13px 16px;
+  border:1.5px solid rgba(255,255,255,.12);
+  border-radius:10px;font-family:'DM Sans',sans-serif;font-size:.92rem;
+  background:rgba(6,16,30,.7);color:var(--txt);
+  transition:all .25s ease;
+}
+input::placeholder{color:var(--txt2)}
+input:focus,select:focus,textarea:focus{
+  outline:none;border-color:var(--gold);
+  background:rgba(6,16,30,.95);
+  box-shadow:0 0 0 3px rgba(249,198,66,.15)}
+select option{background:#0c1a30;color:var(--txt)}
+input[readonly]{background:rgba(249,198,66,.08);color:var(--gold);font-weight:700;border-color:var(--bdr2)}
+
+/* ═══ BUTTONS ═════════════════════════════════ */
+button{
+  padding:12px 24px;border:none;border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;
+  cursor:pointer;transition:all .25s ease;
+  display:inline-flex;align-items:center;gap:8px;
+  white-space:nowrap;text-transform:uppercase;letter-spacing:.6px;
+  position:relative;overflow:hidden;
+}
+button::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);
+  transition:background .2s}
+button:active::after{background:rgba(255,255,255,.08)}
+.bp{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;
+  box-shadow:0 6px 20px rgba(212,168,67,.25)}
+.bp:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(212,168,67,.38)}
+.bs{background:rgba(212,168,67,.08);color:var(--gold);border:1.5px solid var(--bdr2)}
+.bs:hover{background:rgba(212,168,67,.16);transform:translateY(-2px)}
+.bd{background:linear-gradient(135deg,#f43f5e,#e11d48);color:#fff}
+.bd:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(244,63,94,.35)}
+.bg{background:linear-gradient(135deg,var(--green),#059669);color:#fff}
+.bg:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(16,185,129,.35)}
+.bw{background:linear-gradient(135deg,var(--warn),#d97706);color:#000}
+.bw:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(245,158,11,.35)}
+.bt{background:linear-gradient(135deg,var(--teal),var(--teal2));color:#000}
+.bt:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(14,165,160,.35)}
+.sm{padding:8px 14px;font-size:.8rem;border-radius:8px}
+.w100{width:100%;justify-content:center;margin-top:4px}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* ═══ GRID ════════════════════════════════════ */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+/* ═══ TABS ════════════════════════════════════ */
+.tabs{display:flex;gap:0;margin-bottom:28px;
+  border-bottom:1px solid var(--bdr);overflow-x:auto;
+  scrollbar-width:none;-ms-overflow-style:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:13px 18px;background:transparent;color:var(--txt2);
+  border:none;border-bottom:2px solid transparent;
+  font-weight:600;font-size:.83rem;cursor:pointer;
+  white-space:nowrap;transition:all .25s ease;
+  margin-bottom:-1px;text-transform:uppercase;letter-spacing:.5px}
+.tab:hover{color:var(--txt)}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold);background:rgba(249,198,66,.05)}
+.tab-body{display:none}
+.tab-body.on{display:block;animation:tabIn .3s ease both}
+@keyframes tabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ CHIPS ═══════════════════════════════════ */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.chip{
+  padding:9px 16px;border-radius:99px;font-size:.82rem;font-weight:600;
+  cursor:pointer;transition:all .2s ease;
+  background:rgba(59,130,246,.1);color:#60a5fa;
+  border:1px solid rgba(59,130,246,.25);
+  display:flex;align-items:center;gap:6px;
+}
+.chip:hover:not(.disabled){transform:translateY(-2px);background:rgba(59,130,246,.18)}
+.chip.on{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#000;border-color:var(--gold);
+  box-shadow:0 4px 14px rgba(212,168,67,.3)}
+.chip.disabled{opacity:.35;cursor:not-allowed;background:rgba(80,80,80,.12);
+  color:var(--txt2);border-color:rgba(255,255,255,.06)}
+.chip-cnt{font-size:.7rem;background:rgba(0,0,0,.2);
+  padding:1px 7px;border-radius:99px}
+.chip.on .chip-cnt{background:rgba(0,0,0,.25)}
+
+/* ═══ BADGES ══════════════════════════════════ */
+.bdg{display:inline-block;padding:4px 11px;border-radius:99px;
+  font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.bdg-g{background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.2)}
+.bdg-y{background:rgba(212,168,67,.15);color:var(--gold);border:1px solid rgba(212,168,67,.2)}
+.bdg-b{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.2)}
+.bdg-r{background:rgba(244,63,94,.15);color:#fb7185;border:1px solid rgba(244,63,94,.2)}
+.bdg-t{background:rgba(14,165,160,.15);color:#2dd4bf;border:1px solid rgba(14,165,160,.2)}
+
+/* ═══ ALERTS ══════════════════════════════════ */
+.alert{padding:13px 16px;border-radius:10px;margin-bottom:14px;
+  display:flex;align-items:flex-start;gap:10px;font-size:.88rem;border:1px solid}
+.al-s{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.2);color:#34d399}
+.al-w{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:#fbbf24}
+.al-d{background:rgba(244,63,94,.08);border-color:rgba(244,63,94,.2);color:#fb7185}
+.al-i{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.2);color:#60a5fa}
+
+/* ═══ TABLE ═══════════════════════════════════ */
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid var(--bdr)}
+table{width:100%;border-collapse:collapse}
+th{background:rgba(249,198,66,.1);color:var(--gold);
+  padding:13px 14px;text-align:left;font-weight:700;
+  font-size:.75rem;text-transform:uppercase;letter-spacing:.6px;
+  border-bottom:1px solid var(--bdr)}
+td{padding:12px 14px;border-bottom:1px solid var(--bdr);font-size:.88rem;color:var(--txt3)}
+tr:last-child td{border-bottom:none}
+tr{transition:background .15s}
+tr:hover td{background:rgba(249,198,66,.04)}
+
+/* ═══ ROW ITEMS ═══════════════════════════════ */
+.ri{background:rgba(6,16,30,.65);border:1px solid var(--bdr);border-radius:12px;
+  padding:16px 20px;margin-bottom:10px;
+  display:flex;justify-content:space-between;align-items:center;
+  transition:all .25s ease;gap:12px}
+.ri:hover{background:rgba(6,16,30,.9);border-color:var(--bdr2);transform:translateX(4px)}
+.ri-title{font-weight:600;color:var(--txt);margin-bottom:3px}
+.ri-sub{font-size:.82rem;color:var(--txt2)}
+
+/* ═══ RESULT CARD ═════════════════════════════ */
+.res-card{background:rgba(6,16,30,.65);border:1px solid var(--bdr);
+  border-radius:12px;padding:18px;margin-bottom:12px;
+  border-left:3px solid var(--gold)}
+.medal-box{background:rgba(249,198,66,.08);padding:14px;border-radius:10px;
+  border:1px solid rgba(249,198,66,.15)}
+
+/* ═══ BIB ═════════════════════════════════════ */
+.bib-row{background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.15);
+  border-radius:10px;padding:14px 18px;margin-bottom:8px;
+  display:flex;justify-content:space-between;align-items:center}
+
+/* ═══ ORDER OF EVENTS ═════════════════════════ */
+.oe-item{
+  display:grid;grid-template-columns:52px 1fr auto auto auto 80px 80px;
+  align-items:center;gap:14px;
+  background:rgba(6,16,30,.6);border:1px solid var(--bdr);
+  border-radius:12px;padding:14px 18px;margin-bottom:8px;
+  transition:all .25s ease;
+}
+.oe-item:hover{border-color:var(--bdr2);background:rgba(6,16,30,.9)}
+.oe-num{font-family:'Cormorant Garant',serif;font-size:1.8rem;font-weight:700;
+  color:var(--gold);opacity:.7;text-align:center}
+@media(max-width:768px){.oe-item{grid-template-columns:40px 1fr;gap:8px}
+  .oe-item>*:not(:nth-child(1)):not(:nth-child(2)){display:none}}
+
+/* ═══ MODAL ═══════════════════════════════════ */
+.modal{display:none;position:fixed;inset:0;z-index:5000;
+  align-items:center;justify-content:center;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(6px)}
+.modal.on{display:flex;animation:mFadeIn .25s ease}
+@keyframes mFadeIn{from{opacity:0}to{opacity:1}}
+.modal-box{
+  background:linear-gradient(145deg,#1a2236,#1e2a42);
+  border:1px solid var(--bdr2);border-radius:20px;
+  padding:32px;max-width:580px;width:92%;
+  box-shadow:0 30px 80px rgba(0,0,0,.5);
+  max-height:90vh;overflow-y:auto;
+  animation:mPopIn .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes mPopIn{from{transform:scale(.88) translateY(-24px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}
+.modal-hdr{display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--bdr)}
+.modal-hdr h2{font-family:'Cormorant Garant',serif;font-size:1.4rem;color:var(--txt);
+  margin:0;font-weight:700}
+.x-btn{background:none;border:none;font-size:1.6rem;cursor:pointer;color:var(--txt2);
+  padding:4px;transition:all .2s;min-width:0;text-transform:none;letter-spacing:0;
+  line-height:1;border-radius:6px}
+.x-btn:hover{color:var(--gold);background:var(--gold-dim);transform:rotate(90deg)}
+
+/* ═══ SCOREBOARD ══════════════════════════════ */
+.sb-row-top{background:linear-gradient(90deg,rgba(212,168,67,.08),rgba(212,168,67,.02))}
+.cat-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+
+/* ═══ STAT CARDS ══════════════════════════════ */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+@media(max-width:768px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+.stat-card{
+  background:rgba(6,16,30,.75);border:1px solid var(--bdr);
+  border-radius:14px;padding:20px;text-align:center;
+  transition:all .3s ease;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;bottom:0;left:0;right:0;
+  height:2px;background:var(--accent, var(--gold));opacity:.6}
+.stat-card:hover{transform:translateY(-4px);border-color:var(--bdr2);background:rgba(6,16,30,.95)}
+.stat-n{font-family:'Cormorant Garant',serif;font-size:2.2rem;font-weight:700;
+  color:var(--gold);line-height:1}
+.stat-l{font-size:.78rem;color:var(--txt2);text-transform:uppercase;
+  letter-spacing:.6px;margin-top:6px;font-weight:600}
+
+/* ═══ LOGIN CARD ══════════════════════════════ */
+.login-center{max-width:440px;margin:0 auto}
+.role-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.role-tab{padding:12px 8px;border:1.5px solid var(--bdr);border-radius:10px;
+  cursor:pointer;transition:all .2s;text-align:center;font-size:.8rem;font-weight:600;
+  color:var(--txt2);background:transparent;text-transform:none;letter-spacing:0;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  font-family:'DM Sans',sans-serif}
+.role-tab .icon{font-size:1.4rem}
+.role-tab:hover{border-color:var(--bdr2);color:var(--txt)}
+.role-tab.on{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+
+/* ═══ ANIMATIONS ══════════════════════════════ */
+.stagger>*{animation:staggerIn .4s ease both}
+.stagger>*:nth-child(1){animation-delay:.05s}
+.stagger>*:nth-child(2){animation-delay:.10s}
+.stagger>*:nth-child(3){animation-delay:.15s}
+.stagger>*:nth-child(4){animation-delay:.20s}
+.stagger>*:nth-child(5){animation-delay:.25s}
+.stagger>*:nth-child(6){animation-delay:.30s}
+@keyframes staggerIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ PRINT ═══════════════════════════════════ */
+@media print{
+  #stickyNav,#overlay,#toast,.tabs button.bd,.hero-actions,
+  button.bp,button.bs,button.bd,button.bg,button.bw,button.bt,
+  .hamburger{display:none!important}
+  body{background:#fff;padding-top:0}
+  .card{box-shadow:none;border:1px solid #e5e7eb}
+}
+
+/* ═══ EVENT DELETE BTN ════════════════════════ */
+.evt-del-btn{
+  background:rgba(255,77,109,.15);color:#ff4d6d;
+  border:1px solid rgba(255,77,109,.35);border-radius:6px;
+  padding:3px 8px;font-size:.75rem;cursor:pointer;
+  transition:all .2s;min-width:0;text-transform:none;letter-spacing:0;
+  line-height:1.5;display:inline-flex;align-items:center;gap:3px;
+  font-family:'DM Sans',sans-serif;font-weight:600;
+}
+.evt-del-btn:hover{background:rgba(255,77,109,.3);transform:scale(1.05);}
+</style>
+</head>
+<body>
+
+<!-- STICKY NAV -->
+<nav id="stickyNav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html">
+      <img id="bvnNavLogo" style="width:32px;height:40px;object-fit:contain;display:none"><span id="bvnMedal">🏅</span>
+      <span>BVN Athletic Meet</span>
+    </a>
+    <button class="hamburger" onclick="toggleMenu()" id="ham" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
+      <button class="nl nl-ghost" onclick="navGo('s-score');closeMenu()">📊 Scoreboard</button>
+      <button class="nl nl-ghost" onclick="navGo('s-pub');closeMenu()">🏆 Results</button>
+      <button class="nl nl-outline" onclick="navGo('s-login');closeMenu()">🔐 Login</button>
+      <button class="logout-btn" id="mobileLogout" onclick="doLogout();closeMenu()" style="display:none;width:100%;justify-content:center">🚪 Logout</button>
+    </div>
+    <div id="navUser">
+      <span class="user-badge" id="navUserLabel">—</span>
+      <button class="logout-btn" onclick="doLogout()">🚪 Logout</button>
+    </div>
+  </div>
+</nav>
+
+<!-- LOADING -->
+<div id="overlay">
+  <div class="spin-ring"></div>
+  <div id="ldTxt">🏅 BVN Athletic Meet</div>
+  <div id="ldSub">Connecting to Firebase…</div>
+  <div id="ldHint" style="color:#a8c0d8;font-size:.78rem;margin-top:8px;display:none;max-width:320px;text-align:center">Still loading? Check internet connection or Firebase Console → Firestore Rules</div>
+  <div id="errBox">
+    <h3>Connection Failed</h3>
+    <p id="errMsg">Could not connect to the database.<br>Check your internet connection and try again.</p>
+    <br>
+    <button class="bw" onclick="location.reload()" style="margin-top:12px;justify-content:center;width:100%">🔄 Retry</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero" id="heroSec">
+  <img id="bvnHeroLogo" style="width:80px;height:100px;object-fit:contain;margin:0 auto 12px;display:none;filter:drop-shadow(0 0 12px rgba(249,198,66,.4))"><div class="hero-badge">🏟️ Kollam District Championship</div>
+  <h1>BVN Athletic Meet</h1>
+  <p class="tagline">Live Registration · Results · Scoreboard</p>
+  <div id="livePill" style="display:none;margin-bottom:20px">
+    <span class="live-chip"><span class="pulse"></span> LIVE — Real-time Sync Active</span>
+  </div>
+  <div class="hero-actions">
+    <button class="bp nl-gold" onclick="navGo('s-score')">📊 Scoreboard</button>
+    <button class="bs" onclick="navGo('s-pub')">🏆 Results</button>
+    <button class="nl-outline bs" onclick="navGo('s-login')">🔐 Login</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ LOGIN ════════════════════════════ -->
+<div id="s-login" class="card sec on">
+  <div class="login-center">
+    <div class="sh"><h2><em>Welcome</em> Back</h2></div>
+    <p style="color:var(--txt2);margin-bottom:22px;font-size:.9rem">Select your role to continue</p>
+    <div class="role-tabs">
+      <button class="role-tab on" id="rt-school" onclick="setRole('school')">
+        <span class="icon">🏫</span>School Admin
+      </button>
+      <button class="role-tab" id="rt-district" onclick="setRole('district')">
+        <span class="icon">🏛️</span>District
+      </button>
+      <button class="role-tab" id="rt-official" onclick="setRole('official')">
+        <span class="icon">⚖️</span>Official
+      </button>
+    </div>
+    <div id="lSchoolWrap">
+      <div class="form-group">
+        <label class="form-label">School</label>
+        <select id="lSchool"><option value="">-- Select Your School --</option></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input type="password" id="lPass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="bp w100" onclick="doLogin()">🔐 Login</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════ DASHBOARD ════════════════════════ -->
+<div id="s-dash" class="card sec" style="display:none">
+
+  <!-- SCHOOL NAME BANNER (school login only) -->
+  <div id="schoolNameBanner" style="display:none;margin-bottom:20px;background:linear-gradient(135deg,rgba(249,198,66,.12),rgba(249,198,66,.04));border:1px solid rgba(249,198,66,.3);border-radius:16px;padding:18px 24px;display:flex;align-items:center;gap:14px">
+    <span style="font-size:2rem">🏫</span>
+    <div>
+      <div style="font-size:.75rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.8px;font-weight:600;margin-bottom:2px">Logged in as</div>
+      <div id="schoolNameDisplay" style="font-family:'Cormorant Garant',serif;font-size:1.5rem;font-weight:700;color:var(--gold);letter-spacing:.3px"></div>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-grid stagger" id="statsRow">
+    <div class="stat-card" id="sc-total" style="--accent:var(--gold)">
+      <div class="stat-n" id="stTotal">0</div>
+      <div class="stat-l">Total Students</div>
+    </div>
+    <div class="stat-card" id="sc-bib" style="--accent:#34d399">
+      <div class="stat-n" id="stBib">0</div>
+      <div class="stat-l">BIB Assigned</div>
+    </div>
+    <div class="stat-card" id="sc-res" style="--accent:#60a5fa">
+      <div class="stat-n" id="stRes">0</div>
+      <div class="stat-l">Results Entered</div>
+    </div>
+    <div class="stat-card" id="sc-schools" style="--accent:#a78bfa">
+      <div class="stat-n" id="stSchools">0</div>
+      <div class="stat-l">Schools</div>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabBar">
+    <button class="tab school-tab" onclick="goTab('t-reg')" style="display:none">📝 Registrations</button>
+    <button class="tab official-tab" onclick="goTab('t-res')" style="display:none">🏅 Results Entry</button>
+    <button class="tab" onclick="goTab('t-view')">📊 Results</button>
+    <button class="tab" onclick="goTab('t-prog')">📅 Programme</button>
+    <button class="tab dist-tab" onclick="goTab('t-bib')" style="display:none">🏷️ BIB</button>
+    <button class="tab dist-tab" onclick="goTab('t-oe')" style="display:none">📋 Order of Events</button>
+    <button class="tab dist-tab" onclick="goTab('t-evt')" style="display:none">⚙️ Events</button>
+    <button class="tab dist-tab" onclick="goTab('t-sch')" style="display:none">🏫 Schools</button>
+    <button class="tab dist-tab" onclick="goTab('t-rep')" style="display:none">📋 Reports</button>
+  </div>
+
+  <!-- ── REGISTRATIONS ─────────────────────── -->
+  <div id="t-reg" class="tab-body">
+    <div class="sh">
+      <h2>Student <em>Registrations</em></h2>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="sync-pill">☁️ Cloud Sync</span>
+        <button class="bt sm" onclick="printOEpdf()" style="font-size:.75rem;padding:6px 12px">📅 Order of Events PDF</button>
+      </div>
+    </div>
+    <div id="regStatusBanner"></div>
+    <div class="alert al-i">
+      ℹ️ RELAY ഒഴികെ ഓരോ (ഇവന്റ് + കാറ്റഗറി + ജെൻഡർ) കോമ്പിനേഷനിലും ഒരു സ്കൂളിൽ നിന്ന് 1 കുട്ടി. RELAY-ൽ 4 പേർ വരെ.
+    </div>
+    <div class="g2" style="margin-bottom:14px">
+      <div class="form-group">
+        <label class="form-label">Student Name</label>
+        <input type="text" id="rName" placeholder="Full name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date of Birth</label>
+        <input type="date" id="rDOB">
+      </div>
+    </div>
+    <div class="g3" style="margin-bottom:14px">
+      <div class="form-group">
+        <label class="form-label">Class</label>
+        <select id="rClass" onchange="autoCat()">
+          <option value="">Select Class</option>
+          <option value="1">I</option><option value="2">II</option><option value="3">III</option>
+          <option value="4">IV</option><option value="5">V</option><option value="6">VI</option>
+          <option value="7">VII</option><option value="8">VIII</option><option value="9">IX</option>
+          <option value="10">X</option><option value="11">XI</option><option value="12">XII</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select id="rCat" onchange="refreshChips(true)">
+          <option value="">Select Category</option>
+          <option value="PRADEMIC">PRADEMIC</option>
+          <option value="SISU">SISU</option>
+          <option value="BALA">BALA</option>
+          <option value="KISHORE">KISHORE</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Gender</label>
+        <select id="rGen" onchange="refreshChips(true)">
+          <option value="">Select Gender</option>
+          <option value="Boys">Boys</option>
+          <option value="Girls">Girls</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="form-label">Photo (Optional)</label>
+      <div style="display:flex;align-items:center;gap:14px">
+        <label style="cursor:pointer;display:inline-flex;align-items:center;gap:8px;background:var(--card2);border:1px dashed var(--bdr);border-radius:10px;padding:10px 18px;font-size:.83rem;color:var(--txt2);transition:.2s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='var(--bdr)'">
+          📷 Photo Upload
+          <input type="file" accept="image/*" id="rPhotoInput" style="display:none" onchange="handlePhoto(this)">
+        </label>
+        <div id="photoPreview" style="display:none">
+          <img id="photoThumb" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--teal)">
+          <button onclick="clearPhoto()" style="background:none;border:none;color:var(--txt2);cursor:pointer;font-size:.75rem;display:block;text-align:center;margin-top:2px">✕ Remove</button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:18px">
+      <label class="form-label">Select Events</label>
+      <div id="chips" class="chips"></div>
+    </div>
+    <button class="bp w100" id="addRegBtn" onclick="addReg()">➕ Add Registration</button>
+    <button class="bs w100" onclick="printRegList()" style="margin-top:10px">📄 Print List with BIB Numbers</button>
+    <div style="margin-top:28px">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Reg No</th><th>BIB</th><th>Name</th><th>Class</th><th>Cat</th><th>Gender</th><th>Events</th><th></th></tr></thead>
+          <tbody id="regBody"><tr><td colspan="8" style="text-align:center;color:var(--txt2);padding:24px">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RESULTS ENTRY ──────────────────────── -->
+  <div id="t-res" class="tab-body">
+    <div class="sh"><h2>Results <em>Entry</em></h2><span class="sync-pill">☁️ Real-time</span></div>
+    <div class="g3" style="margin-bottom:14px">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select id="eCat" onchange="updResDD()"><option value="">Category</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Gender</label>
+        <select id="eGen" onchange="updResDD()">
+          <option value="">Gender</option>
+          <option value="Boys">Boys</option>
+          <option value="Girls">Girls</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Event</label>
+        <select id="eEvt" onchange="loadParticipants()"><option value="">Event</option></select>
+      </div>
+    </div>
+    <div style="background:rgba(11,15,26,.5);padding:22px;border-radius:14px;border:1px solid var(--bdr);margin-bottom:20px">
+      <h3 style="font-family:'Cormorant Garant',serif;color:var(--txt);margin-bottom:18px;font-size:1.1rem">Record Positions</h3>
+      <div class="g3">
+        <div>
+          <label class="form-label">🥇 1st — 5 Points</label>
+          <select id="p1" onchange="fillPts()"><option value="">-- Select --</option></select>
+          <input id="pt1" readonly placeholder="Points">
+        </div>
+        <div>
+          <label class="form-label">🥈 2nd — 3 Points</label>
+          <select id="p2" onchange="fillPts()"><option value="">-- Select --</option></select>
+          <input id="pt2" readonly placeholder="Points">
+        </div>
+        <div>
+          <label class="form-label">🥉 3rd — 1 Point</label>
+          <select id="p3" onchange="fillPts()"><option value="">-- Select --</option></select>
+          <input id="pt3" readonly placeholder="Points">
+        </div>
+      </div>
+      <button class="bg w100" id="saveResBtn" onclick="saveRes()" style="margin-top:14px">✅ Save Result</button>
+    </div>
+    <h3 style="font-family:'Cormorant Garant',serif;font-size:1.1rem;color:var(--txt);margin-bottom:14px">All Entered Results</h3>
+    <div id="resList"></div>
+  </div>
+
+  <!-- ── VIEW RESULTS ───────────────────────── -->
+  <div id="t-view" class="tab-body">
+    <div class="sh"><h2>View <em>Results</em></h2></div>
+    <!-- School-only result download banner -->
+    <div id="schoolResDownloadBanner" style="display:none;margin-bottom:16px;background:linear-gradient(135deg,rgba(91,158,245,.1),rgba(91,158,245,.03));border:1px solid rgba(91,158,245,.3);border-radius:14px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:700;color:#60a5fa;font-size:.95rem">🏫 <span id="schoolResName"></span> — Results</div>
+        <div style="font-size:.8rem;color:var(--txt2);margin-top:3px">നിങ്ങളുടെ വിദ്യാലയം നേടിയ medals / points download ചെയ്യുക</div>
+      </div>
+      <button class="bp sm" onclick="downloadSchoolResults()" style="white-space:nowrap">📄 Download PDF</button>
+    </div>
+    <div class="g3" style="margin-bottom:20px">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select id="vCat" onchange="viewRes()"><option value="all">All Categories</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Gender</label>
+        <select id="vGen" onchange="viewRes()">
+          <option value="all">All Genders</option>
+          <option value="Boys">Boys</option>
+          <option value="Girls">Girls</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Event</label>
+        <select id="vEvt" onchange="viewRes()"><option value="all">All Events</option></select>
+      </div>
+    </div>
+    <div id="viewDisp"></div>
+  </div>
+
+  <!-- ── PROGRAMME (all users) ─────────────── -->
+  <div id="t-prog" class="tab-body">
+    <div class="sh"><h2>Event <em>Programme</em></h2></div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+      <button class="bp" onclick="printOEpdf()">📄 Download Programme PDF</button>
+      <button class="bs" onclick="window.print()">🖨️ Print</button>
+    </div>
+    <div class="alert al-i" style="margin-bottom:16px">👇 Order of Events — schools, officials, everyone can download this PDF</div>
+    <div id="progDisp"></div>
+  </div>
+
+  <!-- ── BIB NUMBERS ───────────────────────── -->
+  <div id="t-bib" class="tab-body">
+    <div class="sh"><h2>BIB <em>Numbers</em></h2></div>
+    <div style="background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:14px;padding:20px;margin-bottom:20px">
+      <h3 style="font-family:'Cormorant Garant',serif;color:#34d399;font-size:1.1rem;margin-bottom:14px">School-Wise Series</h3>
+      <div class="g2" style="margin-bottom:12px">
+        <div class="form-group">
+          <label class="form-label">Starting BIB</label>
+          <input type="number" id="bibStart" value="1001" min="1">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Block per School</label>
+          <input type="number" id="bibBlock" value="100" min="10">
+        </div>
+      </div>
+      <button class="bg w100" id="bibBtn" onclick="genBIB()">🔢 Generate BIB Series</button>
+    </div>
+    <!-- BIB RESET -->
+    <div style="background:rgba(255,77,109,.06);border:1px solid rgba(255,77,109,.25);border-radius:14px;padding:18px 20px;margin-bottom:20px">
+      <h3 style="font-family:'Cormorant Garant',serif;color:#ff4d6d;font-size:1rem;margin-bottom:8px">⚠️ BIB Reset</h3>
+      <p style="font-size:.85rem;color:var(--txt2);margin-bottom:12px">എല്ലാ students-ന്റെ BIB number clear ചെയ്യുക. BIB series-ഉം reset ആകും. ഈ action undo ചെയ്യാൻ സാധിക്കില്ല.</p>
+      <button class="bd w100" onclick="resetAllBIB()">🗑️ Reset All BIB Numbers</button>
+    </div>
+    <div class="stats-grid stagger" style="grid-template-columns:1fr 1fr;margin-bottom:20px">
+      <div class="stat-card"><div class="stat-n" id="totStu">0</div><div class="stat-l">Total Students</div></div>
+      <div class="stat-card" style="--accent:var(--gold)"><div class="stat-n" id="totBib">0</div><div class="stat-l">BIB Assigned</div></div>
+    </div>
+    <h3 style="font-family:'Cormorant Garant',serif;color:var(--txt);margin-bottom:14px;font-size:1.1rem">School Series</h3>
+    <div id="bibSeriesDisp"></div>
+    <h3 style="font-family:'Cormorant Garant',serif;color:var(--txt);margin:20px 0 14px;font-size:1.1rem">Download School Lists</h3>
+    <div id="bibListDisp"></div>
+  </div>
+
+  <!-- ── ORDER OF EVENTS ───────────────────── -->
+  <div id="t-oe" class="tab-body">
+    <div class="sh"><h2>Order of <em>Events</em></h2></div>
+    <div style="background:rgba(11,15,26,.5);border:1px solid var(--bdr);border-radius:14px;padding:22px;margin-bottom:22px">
+      <h3 style="font-family:'Cormorant Garant',serif;color:var(--txt);font-size:1.1rem;margin-bottom:16px">➕ Add Entry</h3>
+      <div class="g4" style="margin-bottom:12px">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="oeEvtCat">
+            <option value="">Category</option>
+            <option value="PRADEMIC">PRADEMIC</option>
+            <option value="SISU">SISU</option>
+            <option value="BALA">BALA</option>
+            <option value="KISHORE">KISHORE</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select id="oeEvtGen">
+            <option value="">Gender</option>
+            <option value="Boys">Boys</option>
+            <option value="Girls">Girls</option>
+            <option value="Both">Both</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Event</label>
+          <select id="oeEvtName"><option value="">Event</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time</label>
+          <input type="time" id="oeTime">
+        </div>
+      </div>
+      <div class="g2" style="margin-bottom:12px">
+        <div class="form-group">
+          <label class="form-label">Venue / Track</label>
+          <input type="text" id="oeVenue" placeholder="Optional">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Note</label>
+          <input type="text" id="oeNote" placeholder="Optional">
+        </div>
+      </div>
+      <button class="bp w100" onclick="addOE()">➕ Add to Programme</button>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap">
+      <button class="bg" onclick="printOEpdf()">📄 Print Programme PDF</button>
+      <button class="bd sm" onclick="clearOE()">🗑️ Clear All</button>
+    </div>
+    <div id="oeDisp"></div>
+  </div>
+
+  <!-- ── EVENTS ────────────────────────────── -->
+  <div id="t-evt" class="tab-body">
+    <div class="sh"><h2>Event <em>Management</em></h2></div>
+    <div class="alert al-w" style="margin-bottom:12px">⚠️ ഇവിടെ delete ചെയ്ത events registration-ൽ കാണില്ല. Default events restore ചെയ്യാൻ ചുവടെ ഉള്ള button ഉപയോഗിക്കുക.</div>
+    <div style="background:rgba(11,15,26,.5);border:1px solid var(--bdr);border-radius:14px;padding:20px;margin-bottom:20px">
+      <h3 style="font-family:'Cormorant Garant',serif;color:var(--txt);font-size:1.1rem;margin-bottom:14px">➕ Add Event</h3>
+      <div class="g3" style="margin-bottom:12px">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select id="newEvtCat">
+            <option value="">Category</option>
+            <option value="PRADEMIC">PRADEMIC</option>
+            <option value="SISU">SISU</option>
+            <option value="BALA">BALA</option>
+            <option value="KISHORE">KISHORE</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Gender</label>
+          <select id="newEvtGen">
+            <option value="">Gender</option>
+            <option value="Boys">Boys</option>
+            <option value="Girls">Girls</option>
+            <option value="Both">Both</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Event Name</label>
+          <input type="text" id="newEvtName" placeholder="e.g. 100m RELAY">
+        </div>
+      </div>
+      <button class="bp w100" onclick="addEvt()">➕ Add Event</button>
+      <button class="bw w100" onclick="restoreDefaultEvents()" style="margin-top:8px">🔄 Restore Default Events</button>
+    </div>
+    <div id="evtDisp"></div>
+  </div>
+
+  <!-- ── SCHOOLS ───────────────────────────── -->
+  <div id="t-sch" class="tab-body">
+    <div class="sh"><h2>School <em>Management</em></h2></div>
+    <div style="background:rgba(11,15,26,.5);border:1px solid var(--bdr);border-radius:14px;padding:20px;margin-bottom:20px">
+      <h3 style="font-family:'Cormorant Garant',serif;color:var(--txt);font-size:1.1rem;margin-bottom:14px">➕ Add New School</h3>
+      <div class="g2" style="margin-bottom:10px">
+        <div class="form-group"><label class="form-label">School Name</label><input type="text" id="nSName" placeholder="School name"></div>
+        <div class="form-group"><label class="form-label">Principal</label><input type="text" id="nSPrin" placeholder="Principal name"></div>
+      </div>
+      <div class="g2" style="margin-bottom:10px">
+        <div class="form-group"><label class="form-label">Contact</label><input type="text" id="nSCont" placeholder="Contact number"></div>
+        <div class="form-group"><label class="form-label">Password</label><input type="password" id="nSPass" placeholder="School password"></div>
+      </div>
+      <button class="bp w100" onclick="addSchool()">➕ Add School</button>
+    </div>
+    <div style="background:rgba(11,15,26,.5);border:1px solid var(--bdr);border-radius:14px;padding:20px;margin-bottom:20px">
+      <h3 style="font-family:'Cormorant Garant',serif;color:var(--txt);font-size:1.1rem;margin-bottom:14px">🔑 System Passwords</h3>
+      <div class="g2">
+        <div>
+          <label class="form-label">District Password</label>
+          <input type="password" id="dPass" placeholder="New password" style="margin-bottom:10px">
+          <button class="bw sm w100" onclick="chgSysPass('district')">🔑 Update</button>
+        </div>
+        <div>
+          <label class="form-label">Official Password</label>
+          <input type="password" id="oPass" placeholder="New password" style="margin-bottom:10px">
+          <button class="bw sm w100" onclick="chgSysPass('official')">🔑 Update</button>
+        </div>
+      </div>
+    </div>
+    <h3 style="font-family:'Cormorant Garant',serif;color:var(--txt);margin-bottom:14px;font-size:1.1rem">Registered Schools</h3>
+    <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+      <button class="bg sm" onclick="toggleAllReg(true)">🟢 Enable All Schools</button>
+      <button class="bd sm" onclick="toggleAllReg(false)">🔴 Disable All Schools</button>
+    </div>
+    <div id="schDisp"></div>
+
+    <!-- FULL RESET -->
+    <div style="margin-top:32px;background:rgba(255,30,30,.06);border:1.5px solid rgba(255,60,60,.3);border-radius:14px;padding:20px 22px">
+      <h3 style="font-family:'Cormorant Garant',serif;color:#ff4d6d;font-size:1.05rem;margin-bottom:6px">⚠️ Full Data Reset</h3>
+      <p style="font-size:.83rem;color:var(--txt2);margin-bottom:16px;line-height:1.6">
+        എല്ലാ <strong style="color:#ff4d6d">Registrations, Results, BIB numbers</strong> ഒരുമിച്ച് delete ചെയ്യും.<br>
+        Schools, Events, Order of Events <strong>നിലനിൽക്കും</strong>. ഈ action undo ചെയ്യാൻ സാധിക്കില്ല.
+      </p>
+      <button class="bd w100" style="background:rgba(255,30,30,.15);border-color:#ff4d6d;color:#ff4d6d;font-weight:700;font-size:.95rem" onclick="fullDataReset()">
+        🗑️ Full Reset — Delete All Registrations & Results
+      </button>
+    </div>
+  </div>
+
+  <!-- ── REPORTS ───────────────────────────── -->
+  <div id="t-rep" class="tab-body">
+    <div class="sh"><h2>Reports & <em>Downloads</em></h2></div>
+    <div class="alert al-i">PDF: Browser print → "Save as PDF"</div>
+    <div class="stagger">
+      <div class="ri"><div><div class="ri-title">📊 School-Wise Report</div><div class="ri-sub">Registrations & category points per school</div></div><div style="display:flex;gap:8px"><button class="bp sm" onclick="rSchool('pdf')">📄 PDF</button><button class="bs sm" onclick="rSchool('csv')">📥 CSV</button></div></div>
+      <div class="ri"><div><div class="ri-title">🎯 Category Report</div><div class="ri-sub">Results by age category</div></div><div style="display:flex;gap:8px"><button class="bp sm" onclick="rCat('pdf')">📄 PDF</button><button class="bs sm" onclick="rCat('csv')">📥 CSV</button></div></div>
+      <div class="ri">
+        <div><div class="ri-title">🏃 Event Participant List</div><div class="ri-sub">ഓരോ ഇവന്റിന്റെ പൂർണ്ണ ലിസ്റ്റ്</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="bp sm" onclick="rEvt('pdf','combined')">📄 Combined</button>
+          <button class="bw sm" onclick="rEvt('pdf','cat')">📄 By Category</button>
+          <button class="bs sm" onclick="rEvt('csv','combined')">📥 CSV</button>
+        </div>
+      </div>
+      <div class="ri"><div><div class="ri-title">🏆 Scoreboard Report</div><div class="ri-sub">Category-wise points tally</div></div><div style="display:flex;gap:8px"><button class="bp sm" onclick="rScore('pdf')">📄 PDF</button><button class="bs sm" onclick="rScore('csv')">📥 CSV</button></div></div>
+      <div class="ri"><div><div class="ri-title">📅 Order of Events</div><div class="ri-sub">Event Programme PDF</div></div><button class="bp sm" onclick="printOEpdf()">📄 PDF</button></div>
+
+      <!-- STATE QUALIFIED REPORT -->
+      <div class="ri" style="flex-direction:column;align-items:stretch;gap:14px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+          <div>
+            <div class="ri-title" style="color:var(--teal);font-size:1rem">🏆 State Qualified List</div>
+            <div class="ri-sub">Category · Event · Boy/Girl · Name · DOB · Class · School</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="bp sm" onclick="rStateQual('pdf')">📄 PDF</button>
+            <button class="bg sm" onclick="rStateQual('excel')">📊 Excel</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <label class="form-label" style="margin:0;white-space:nowrap;font-size:.8rem">Category Filter:</label>
+          <select id="sqCat" style="flex:1;min-width:160px;max-width:280px;background:var(--card2);border:1px solid var(--bdr);color:var(--txt);border-radius:8px;padding:7px 12px;font-size:.85rem;font-family:'DM Sans',sans-serif">
+            <option value="all">All Categories</option>
+            <option value="PRADEMIC">PRADEMIC</option>
+            <option value="SISU">SISU</option>
+            <option value="BALA">BALA</option>
+            <option value="KISHORE">KISHORE</option>
+          </select>
+          <span id="sqCount" style="font-size:.8rem;color:var(--txt2)"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /dash -->
+
+<!-- ════════════════════════════ PUBLIC SCOREBOARD ════════════════ -->
+<div id="s-score" class="card sec" style="display:none">
+  <div class="sh">
+    <h2>Live <em>Scoreboard</em></h2>
+    <span class="sync-pill"><span class="pulse" style="width:7px;height:7px;background:#60a5fa;box-shadow:none"></span> Live</span>
+  </div>
+  <div id="scoreDisp" style="overflow-x:auto"></div>
+  <div style="margin-top:20px"><button class="bs" onclick="navGo('s-login')">← Back</button></div>
+</div>
+
+<!-- ════════════════════════════ PUBLIC RESULTS ═══════════════════ -->
+<div id="s-pub" class="card sec" style="display:none">
+  <div class="sh"><h2>Public <em>Results</em></h2></div>
+  <div class="g3" style="margin-bottom:20px">
+    <div class="form-group"><label class="form-label">Category</label>
+      <select id="pubCat" onchange="pubFilterChange()"><option value="all">All Categories</option></select></div>
+    <div class="form-group"><label class="form-label">Gender</label>
+      <select id="pubGen" onchange="pubFilterChange()"><option value="all">All Genders</option><option value="Boys">Boys</option><option value="Girls">Girls</option></select></div>
+    <div class="form-group"><label class="form-label">Event</label>
+      <select id="pubEvt" onchange="pubRes()"><option value="">-- Select an Event --</option></select></div>
+  </div>
+  <div id="pubDisp"><div class="alert al-i">⬆️ Category / Gender / Event select ചെയ്ത് result കാണുക.</div></div>
+  <div style="margin-top:20px"><button class="bs" onclick="navGo('s-login')">← Back</button></div>
+</div>
+
+</div><!-- /wrap -->
+
+<!-- MODALS -->
+<div id="editModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-hdr"><h2 id="editModalTitle">✏️ Edit</h2><button class="x-btn" onclick="closeM('editModal')">✕</button></div>
+    <div id="editForm"></div>
+  </div>
+</div>
+<div id="editRegModal" class="modal">
+  <div class="modal-box" style="max-width:640px">
+    <div class="modal-hdr">
+      <h2 style="font-family:'Cormorant Garant',serif;font-size:1.3rem">✏️ Edit Registration</h2>
+      <button class="x-btn" onclick="closeM('editRegModal')">✕</button>
+    </div>
+    <div id="editRegForm"></div>
+  </div>
+</div>
+<div id="passModal" class="modal">
+  <div class="modal-box">
+    <div class="modal-hdr"><h2>🔑 Change Password</h2><button class="x-btn" onclick="closeM('passModal')">✕</button></div>
+    <div id="passForm"></div>
+  </div>
+</div>
+
+<script>
+//
+//  FIREBASE CONFIG
+//
+// Firestore REST API - works from ANY domain, no SDK needed
+const FB_PROJECT="bvn-kollam";
+const FB_KEY="AIzaSyBaqcpUqUTaeQuZWVPvOdDDZcNWMO1l9Kk";
+const FB_URL="https://firestore.googleapis.com/v1/projects/"+FB_PROJECT+"/databases/(default)/documents";
+
+function toV(v){
+  if(v===null||v===undefined)return{nullValue:null};
+  if(typeof v==="boolean")return{booleanValue:v};
+  if(typeof v==="number"&&Number.isInteger(v))return{integerValue:""+v};
+  if(typeof v==="number")return{doubleValue:v};
+  if(typeof v==="string")return{stringValue:v};
+  if(Array.isArray(v))return{arrayValue:{values:v.map(toV)}};
+  if(typeof v==="object"){var f={};Object.keys(v).forEach(function(k){f[k]=toV(v[k]);});return{mapValue:{fields:f}};}
+  return{stringValue:""+v};
+}
+function frV(v){
+  if(!v)return null;
+  if("stringValue"in v)return v.stringValue;
+  if("integerValue"in v)return parseInt(v.integerValue);
+  if("doubleValue"in v)return v.doubleValue;
+  if("booleanValue"in v)return v.booleanValue;
+  if("nullValue"in v)return null;
+  if("arrayValue"in v)return(v.arrayValue.values||[]).map(frV);
+  if("mapValue"in v){var o={};Object.keys(v.mapValue.fields||{}).forEach(function(k){o[k]=frV(v.mapValue.fields[k]);});return o;}
+  return null;
+}
+function d2o(doc){if(!doc||!doc.fields)return null;var o={};Object.keys(doc.fields).forEach(function(k){o[k]=frV(doc.fields[k]);});return o;}
+function o2f(obj){var f={};Object.keys(obj).forEach(function(k){f[k]=toV(obj[k]);});return f;}
+
+function mkRef(col,id){
+  return{
+    get:async function(){
+      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY);
+      if(r.status===404)return{exists:false,data:function(){return null;}};
+      if(!r.ok)throw new Error("GET "+r.status);
+      var d=await r.json();var o=d2o(d);
+      return{exists:true,data:function(){return o;}};
+    },
+    set:async function(obj){
+      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:o2f(obj)})});
+      if(!r.ok){var e=await r.text();throw new Error("SET: "+e);}
+    },
+    update:async function(obj){
+      var mask=Object.keys(obj).map(function(k){return"updateMask.fieldPaths="+encodeURIComponent(k);}).join("&");
+      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY+"&"+mask,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:o2f(obj)})});
+      if(!r.ok){var e=await r.text();throw new Error("UPD: "+e);}
+    },
+    delete:async function(){
+      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY,{method:"DELETE"});
+      if(!r.ok&&r.status!==404)throw new Error("DEL "+r.status);
+    },
+    onSnapshot:function(cb){
+      var me=this;
+      async function run(){try{var s=await me.get();cb(s);}catch(e){console.warn("dSnap",e);}}
+      run();var iv=setInterval(run,4000);return function(){clearInterval(iv);};
+    }
+  };
+}
+function mkCol(col){
+  return{
+    doc:function(id){return mkRef(col,id);},
+    get:async function(){
+      var all=[];var url=FB_URL+"/"+col+"?key="+FB_KEY+"&pageSize=500";
+      var r=await fetch(url);if(!r.ok)throw new Error("LIST "+r.status);
+      var d=await r.json();
+      (d.documents||[]).forEach(function(doc){var o=d2o(doc);if(o){var id=doc.name.split("/").pop();all.push({_o:o,_id:id});}});
+      return{docs:all.map(function(x){return{data:function(){return x._o;},id:x._id};})};
+    },
+    onSnapshot:function(cb){
+      var me=this;
+      async function run(){try{cb(await me.get());}catch(e){console.warn("snap",e);}}
+      run();var iv=setInterval(run,4000);return function(){clearInterval(iv);};
+    }
+  };
+}
+var DB={
+  collection:function(col){return mkCol(col);},
+  batch:function(){
+    var ops=[];
+    return{
+      set:function(ref,obj){ops.push(["set",ref,obj]);return this;},
+      update:function(ref,obj){ops.push(["update",ref,obj]);return this;},
+      delete:function(ref){ops.push(["del",ref]);return this;},
+      commit:async function(){for(var i=0;i<ops.length;i++){var o=ops[i];if(o[0]==="set")await o[1].set(o[2]);else if(o[0]==="update")await o[1].update(o[2]);else await o[1].delete();}}
+    };
+  },
+  settings:function(){},enablePersistence:function(){return Promise.resolve();}
+};
+let FB_CFG=null;
+
+//
+//  STATE
+//
+const M={
+  regs:[],results:[],schools:[],
+  cfg:{
+    categories:['PRADEMIC','SISU','BALA','KISHORE'],
+    events:{
+      PRADEMIC:{Boys:['100m','200m','Long Jump','High Jump'],Girls:['100m','200m','Long Jump','High Jump']},
+      SISU:{Boys:['100m','200m','400m','Long Jump','High Jump','Shot Put','4x100m RELAY'],Girls:['100m','200m','400m','Long Jump','High Jump','Shot Put','4x100m RELAY']},
+      BALA:{Boys:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY'],Girls:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY']},
+      KISHORE:{Boys:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY'],Girls:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY']}
+    },
+    passwords:{district:'district@123',official:'official@123'},
+    schoolPasswords:{},bibSeries:{},orderOfEvents:[]
+  },
+  selEvts:[],PTS:{1:5,2:3,3:1}
+};
+let USER=null,curTab='';
+const unsubs=[];
+
+function isRelay(n){return n.toUpperCase().indexOf('RELAY')>=0;}
+
+//
+//  STICKY NAV
+//
+window.addEventListener('scroll',function(){
+  var nav=document.getElementById('stickyNav');
+  nav.classList.toggle('scrolled',window.scrollY>10);
+});
+function toggleMenu(){
+  document.getElementById('navLinks').classList.toggle('open');
+}
+function closeMenu(){document.getElementById('navLinks').classList.remove('open');}
+
+//
+//  INIT
+//
+window.onload=function(){
+  try{
+    // Show hint after 5s if still loading
+    setTimeout(function(){
+      var h=document.getElementById('ldHint');
+      var o=document.getElementById('overlay');
+      if(h&&o&&!o.classList.contains('off'))h.style.display='block';
+    },5000);
+    loadAll();
+  }catch(e){showErr('Firebase init error: '+e.message);}
+};
+
+async function loadAll(){
+  try{
+    setLd('Loading config...');
+    // 15s timeout - prevents infinite hang when Firestore rules block access
+    var tout=new Promise(function(_,rej){
+      setTimeout(function(){rej(new Error(
+        'Connection timed out (15s).<br><br>'+
+        '* Fix: Go to <strong>Firebase Console</strong> -> '+
+        'Firestore Database -> Rules -> set <code>allow read, write: if true</code> -> Publish'
+      ));},15000);
+    });
+    var s=await Promise.race([DB.collection('config').doc('main').get(),tout]);
+    if(s.exists){
+      var d=s.data();
+      if(d.events&&!M._evtWriting)M.cfg.events=d.events;
+      if(d.passwords)M.cfg.passwords=d.passwords;
+      if(d.schoolPasswords)M.cfg.schoolPasswords=d.schoolPasswords;
+      if(d.bibSeries)M.cfg.bibSeries=d.bibSeries;
+      if(d.orderOfEvents)M.cfg.orderOfEvents=d.orderOfEvents;
+    }else{await DB.collection('config').doc('main').set(M.cfg);}
+    setLd('Loading schools...');
+    var ss=await DB.collection('schools').get();
+    M.schools=ss.docs.map(function(d){return d.data();});
+    if(!M.schools.length)await seedSchools();
+    setLd('Starting live sync...');
+    startListeners();
+    hideOvl();
+    document.getElementById('livePill').style.display='block';
+    fillSelects();
+    navGo('s-login');
+  }catch(e){
+    var isTimeout=e.message&&e.message.indexOf('timed out')>=0;
+    showErr(isTimeout?e.message:'Failed to load: '+e.message+
+      '<br><br>* Most likely fix:<br>Firebase Console -> Firestore Database -> <strong>Rules</strong> -> '+
+      'set <code>allow read, write: if true</code> -> <strong>Publish</strong>');
+  }
+}
+async function seedSchools(){
+  var d=[{id:1001,name:'PUTHIYAKAVU CENTRAL',principal:'Dr. Ram Kumar',contact:'9876543210'},
+         {id:1002,name:'VYASA VIDYAMANDIR',principal:'Mr. Sharma',contact:'9876543211'},
+         {id:1003,name:'SREERAMA VIDYA',principal:'Mrs. Priya',contact:'9876543212'}];
+  var b=DB.batch();
+  d.forEach(function(s){b.set(DB.collection('schools').doc(String(s.id)),s);M.cfg.schoolPasswords[s.name]='1234';});
+  b.set(DB.collection('config').doc('main'),M.cfg);
+  await b.commit();M.schools=d;
+}
+function startListeners(){
+  unsubs.forEach(function(u){u();});unsubs.length=0;
+  unsubs.push(DB.collection('registrations').onSnapshot(function(s){M.regs=s.docs.map(function(d){return d.data();});refresh();updateStats();}));
+  unsubs.push(DB.collection('results').onSnapshot(function(s){M.results=s.docs.map(function(d){return d.data();});refresh();updateStats();if(document.getElementById('s-score').classList.contains('on'))renderScore();}));
+  unsubs.push(DB.collection('schools').onSnapshot(function(s){M.schools=s.docs.map(function(d){return d.data();});fillSelects();updateStats();if(curTab==='t-sch')renderSchools();if(curTab==='t-bib')renderBib();if(curTab==='t-reg')renderRegs();}));
+  unsubs.push(DB.collection('config').doc('main').onSnapshot(function(s){
+    if(!s.exists)return;var d=s.data();
+    if(d.events)M.cfg.events=d.events;
+    if(d.passwords)M.cfg.passwords=d.passwords;
+    if(d.schoolPasswords)M.cfg.schoolPasswords=d.schoolPasswords;
+    if(d.bibSeries)M.cfg.bibSeries=d.bibSeries;
+    if(d.orderOfEvents)M.cfg.orderOfEvents=d.orderOfEvents;
+    if(curTab==='t-evt')renderEvts();
+    if(curTab==='t-oe')renderOE();
+    if(curTab==='t-prog')renderProg();
+    // t-reg: don't refreshChips on poll - preserves selection
+  }));
+}
+function refresh(){
+  if(!USER)return;
+  if(curTab==='t-reg')renderRegs();
+  if(curTab==='t-res')renderResList();
+  if(curTab==='t-view')viewRes();
+  if(curTab==='t-bib')renderBib();
+}
+function updateStats(){
+  var el=function(id){return document.getElementById(id);};
+  el('stTotal').textContent=M.regs.length;
+  el('stBib').textContent=M.regs.filter(function(r){return r.bib;}).length;
+  el('stRes').textContent=M.results.length;
+  el('stSchools').textContent=M.schools.length;
+  if(el('totStu'))el('totStu').textContent=M.regs.length;
+  if(el('totBib'))el('totBib').textContent=M.regs.filter(function(r){return r.bib;}).length;
+}
+// Field-specific Firestore helpers ------------------------------
+// NEVER use full set(M.cfg) for partial updates - it silently erases events.
+async function saveConfig(){
+  // Full replace only for initial seed
+  await DB.collection('config').doc('main').set(M.cfg);
+}
+async function cfgUpdate(fields){
+  await DB.collection('config').doc('main').update(fields);
+}
+async function saveOEField(){await cfgUpdate({orderOfEvents:M.cfg.orderOfEvents});}
+async function restoreDefaultEvents(){
+  var def={
+    PRADEMIC:{Boys:['100m','200m','Long Jump','High Jump'],Girls:['100m','200m','Long Jump','High Jump']},
+    SISU:{Boys:['100m','200m','400m','Long Jump','High Jump','Shot Put','4x100m RELAY'],Girls:['100m','200m','400m','Long Jump','High Jump','Shot Put','4x100m RELAY']},
+    BALA:{Boys:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY'],Girls:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY']},
+    KISHORE:{Boys:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY'],Girls:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY']}
+  };
+  if(!confirm('Reset all events to defaults? Custom events will be removed.'))return;
+  M.cfg.events=def;
+  await cfgUpdate({events:def});
+  toast('[OK] Default events restored!');
+  renderEvts();fillSelects();
+}
+
+//
+//  UI HELPERS
+//
+function setLd(t){document.getElementById('ldSub').textContent=t;}
+function hideOvl(){document.getElementById('overlay').classList.add('off');}
+function showErr(msg){
+  document.getElementById('ldTxt').textContent='Connection Failed';
+  document.getElementById('ldSub').textContent='';
+  var e=document.getElementById('errBox');e.style.display='block';
+  document.getElementById('errMsg').innerHTML=msg;
+}
+function toast(msg){
+  var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';
+  t.style.animation='none';void t.offsetWidth;t.style.animation='toastIn .35s cubic-bezier(.34,1.56,.64,1)';
+  setTimeout(function(){t.style.display='none';},3000);
+}
+function navGo(id){
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');s.style.display='none';});
+  var el=document.getElementById(id);if(!el)return;
+  el.classList.add('on');el.style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='s-score')renderScore();
+  if(id==='s-pub')pubFilterChange();
+}
+function goTab(id){
+  document.querySelectorAll('.tab-body').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
+  var tb=document.getElementById(id);if(tb)tb.classList.add('on');
+  if(event&&event.target)event.target.classList.add('on');
+  curTab=id;
+  // School result download banner: show only in t-view for school users
+  var srb=document.getElementById('schoolResDownloadBanner');
+  if(srb){
+    if(id==='t-view'&&USER&&USER.type==='school'){
+      srb.style.display='flex';
+      document.getElementById('schoolResName').textContent=USER.school;
+    }else{
+      srb.style.display='none';
+    }
+  }
+  if(id==='t-reg')renderRegs();
+  if(id==='t-res')renderResList();
+  if(id==='t-view')viewRes();
+  if(id==='t-bib')renderBib();
+  if(id==='t-evt')renderEvts();
+  if(id==='t-sch')renderSchools();
+  if(id==='t-oe')renderOE();
+  if(id==='t-prog')renderProg();
+}
+function closeM(id){document.getElementById(id).classList.remove('on');}
+
+function fillSelects(){
+  function rebuildSel(el,html){
+    if(!el)return;
+    var prev=el.value;
+    el.innerHTML=html;
+    if(prev)el.value=prev;
+  }
+  var schoolOpts='<option value="">-- Select Your School --</option>'
+    +M.schools.map(function(s){return '<option value="'+s.name+'">'+s.name+'</option>';}).join('');
+  rebuildSel(document.getElementById('lSchool'),schoolOpts);
+  var catsAll='<option value="all">All Categories</option>'
+    +M.cfg.categories.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+  ['vCat','pubCat','sqCat'].forEach(function(id){rebuildSel(document.getElementById(id),catsAll);});
+  var catsOnly='<option value="">Category</option>'
+    +M.cfg.categories.map(function(c){return '<option value="'+c+'">'+c+'</option>';}).join('');
+  rebuildSel(document.getElementById('eCat'),catsOnly);
+  rebuildSel(document.getElementById('rCat'),catsOnly);
+}
+
+//
+//  LOGIN (role tabs UI)
+//
+var loginRole='school';
+function setRole(r){
+  loginRole=r;
+  ['school','district','official'].forEach(function(x){
+    document.getElementById('rt-'+x).classList.toggle('on',x===r);
+  });
+  document.getElementById('lSchoolWrap').style.display=(r==='school')?'block':'none';
+}
+function chgLoginForm(){setRole(loginRole);}
+function doLogin(){
+  var school=document.getElementById('lSchool').value;
+  var pass=document.getElementById('lPass').value;
+  if(loginRole==='school'){
+    if(!school){alert('[X] Select your school');return;}
+    if(pass!==(M.cfg.schoolPasswords[school]||'1234')){alert('[X] Invalid password');return;}
+  }else{
+    if(pass!==M.cfg.passwords[loginRole]){alert('[X] Invalid password');return;}
+  }
+  USER={type:loginRole,school:school};
+  var ub=document.getElementById('navUserLabel');
+  ub.textContent=loginRole==='school'?school:loginRole.charAt(0).toUpperCase()+loginRole.slice(1);
+  document.getElementById('navUser').style.display='flex';
+  var ml=document.getElementById('mobileLogout');
+  ml.style.display='flex';ml.classList.add('show');
+  document.querySelectorAll('.nl-outline,.nl-ghost').forEach(function(b){if(b.textContent.includes('Login'))b.style.display='none';});
+
+  // Show/hide school name banner
+  var snb=document.getElementById('schoolNameBanner');
+  var snd=document.getElementById('schoolNameDisplay');
+  if(loginRole==='school'&&school){
+    snb.style.display='flex';
+    snd.textContent=school;
+    // Hide global stat cards not relevant for school login
+    document.getElementById('sc-total').style.display='none';
+    document.getElementById('sc-bib').style.display='none';
+    document.getElementById('sc-res').style.display='none';
+    document.getElementById('sc-schools').style.display='none';
+  }else{
+    snb.style.display='none';
+    document.getElementById('sc-total').style.display='';
+    document.getElementById('sc-bib').style.display='';
+    document.getElementById('sc-res').style.display='';
+    document.getElementById('sc-schools').style.display='';
+  }
+
+  navGo('s-dash');
+  document.querySelectorAll('.school-tab').forEach(function(e){e.style.display=(loginRole==='school')?'block':'none';});
+  document.querySelectorAll('.official-tab').forEach(function(e){e.style.display=(loginRole==='official')?'block':'none';});
+  document.querySelectorAll('.dist-tab').forEach(function(e){e.style.display=(loginRole==='district')?'block':'none';});
+  updateStats();
+  if(loginRole==='school')document.querySelector('.school-tab').click();
+  else if(loginRole==='official')document.querySelector('.official-tab').click();
+  else document.querySelectorAll('.dist-tab')[0].click();
+}
+function doLogout(){
+  USER=null;curTab='';M.selEvts=[];
+  document.getElementById('lPass').value='';
+  document.getElementById('lSchool').value='';
+  document.getElementById('navUser').style.display='none';
+  var ml=document.getElementById('mobileLogout');
+  ml.style.display='none';ml.classList.remove('show');
+  document.querySelectorAll('.nl-outline,.nl-ghost').forEach(function(b){if(b.textContent.includes('Login'))b.style.display='';});
+  // Hide school banner, restore all stat cards
+  document.getElementById('schoolNameBanner').style.display='none';
+  document.getElementById('sc-total').style.display='';
+  document.getElementById('sc-bib').style.display='';
+  document.getElementById('sc-res').style.display='';
+  document.getElementById('sc-schools').style.display='';
+  setRole('school');
+  document.querySelectorAll('.tab-body').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on');});
+  navGo('s-login');
+}
+
+//
+//  CATEGORY
+//
+function getCat(cls){
+  var n=parseInt(cls);
+  if(n<=2)return'PRADEMIC';if(n<=5)return'SISU';if(n<=8)return'BALA';if(n<=10)return'KISHORE';return'';
+}
+function autoCat(){var c=getCat(document.getElementById('rClass').value);if(c){document.getElementById('rCat').value=c;refreshChips(true);}}
+
+//
+//  CHIPS - validate per cat+gen+school
+//
+function refreshChips(clearSel){
+  if(clearSel)M.selEvts=[];
+  var cat=document.getElementById('rCat').value;
+  var gen=document.getElementById('rGen').value;
+  var con=document.getElementById('chips');
+  con.innerHTML='';
+  if(!cat||!gen)return;
+  var evts=(M.cfg.events[cat]||{})[gen]||[];
+  if(!evts.length){
+    con.innerHTML='<div class="alert al-w">[!] '+cat+' '+gen+' ???? events configure ?????????????. District admin-?? ???????????.</div>';
+    return;
+  }
+  evts.forEach(function(e){
+    var relay=isRelay(e);
+    var maxSlots=relay?4:1;
+    var existing=USER?M.regs.filter(function(r){
+      return r.school===USER.school && r.events.indexOf(e)>=0 && r.category===cat && r.gender===gen;
+    }):[];
+    var used=existing.length;
+    var full=used>=maxSlots;
+    var selected=M.selEvts.indexOf(e)>=0;
+    var d=document.createElement('div');
+    if(full&&!selected){
+      d.className='chip disabled';
+      d.title=relay?'RELAY: 4 members already registered':'Already registered from your school';
+      d.innerHTML=e+(relay?'<span class="chip-cnt">'+used+'/'+maxSlots+'</span>':'');
+    }else{
+      d.className='chip'+(selected?' on':'');
+      d.innerHTML=e+(relay?'<span class="chip-cnt">'+used+'/'+maxSlots+'</span>':'')+(selected?' v':'');
+      d.dataset.evt=e;
+      d.onclick=function(){toggleEvt(this.dataset.evt);};
+    }
+    con.appendChild(d);
+  });
+}
+M._photoB64='';
+function handlePhoto(input){
+  if(!input.files||!input.files[0])return;
+  var file=input.files[0];
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var canvas=document.createElement('canvas');
+      var size=Math.min(img.width,img.height);
+      var sx=(img.width-size)/2, sy=(img.height-size)/2;
+      canvas.width=200; canvas.height=200;
+      var ctx=canvas.getContext('2d');
+      ctx.drawImage(img,sx,sy,size,size,0,0,200,200);
+      M._photoB64=canvas.toDataURL('image/jpeg',0.7);
+      document.getElementById('photoThumb').src=M._photoB64;
+      document.getElementById('photoPreview').style.display='flex';
+      document.getElementById('photoPreview').style.alignItems='center';
+      document.getElementById('photoPreview').style.gap='6px';
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function clearPhoto(){
+  M._photoB64='';
+  document.getElementById('rPhotoInput').value='';
+  document.getElementById('photoPreview').style.display='none';
+}
+function evtLimitFor(cat){
+  if(cat==='PRADEMIC')return{max:2,countRelay:true};
+  return{max:3,countRelay:false};
+}
+function countSelNonRelay(){return M.selEvts.filter(function(e){return !isRelay(e);}).length;}
+function toggleEvt(e){
+  var cat=document.getElementById('rCat').value;
+  var rule=evtLimitFor(cat);
+  var i=M.selEvts.indexOf(e);
+  if(i>=0){
+    M.selEvts.splice(i,1);
+  }else{
+    var countable=rule.countRelay?M.selEvts.length:countSelNonRelay();
+    var thisCountable=rule.countRelay?true:!isRelay(e);
+    if(thisCountable&&countable>=rule.max){
+      var catName=cat==='PRADEMIC'?'PRADEMIC':''+cat;
+      var msg=cat==='PRADEMIC'
+        ?'[!] '+catName+' വിഭാഗത്തില് പരമാവധി '+rule.max+' ഇനങ്ങള് മാത്രം.'
+        :'[!] '+catName+' വിഭാഗത്തില് റിലേ ഒഴികെ പരമാവധി '+rule.max+' ഇനങ്ങള് മാത്രം.';
+      alert(msg);return;
+    }
+    M.selEvts.push(e);
+  }
+  refreshChips();
+}
+
+//
+//  REGISTRATIONS
+//
+function genRegNo(school){
+  var pfx=school.split(' ')[0].toUpperCase();
+  var n=M.regs.filter(function(r){return r.school===school;}).length+1;
+  return pfx+'-'+String(n).padStart(3,'0');
+}
+async function addReg(){
+  var name=document.getElementById('rName').value.trim();
+  var dob=document.getElementById('rDOB').value;
+  var cls=document.getElementById('rClass').value;
+  var cat=document.getElementById('rCat').value;
+  var gen=document.getElementById('rGen').value;
+  if(!name||!dob||!cls||!cat||!gen||!M.selEvts.length){alert('[!] Fill all fields and select at least one event');return;}
+  var _rule=evtLimitFor(cat);
+  var _nonRelay=M.selEvts.filter(function(e){return !isRelay(e);}).length;
+  if(cat==='PRADEMIC'&&M.selEvts.length>2){alert('[X] PRADEMIC: പരമാവധി 2 ഇനങ്ങള് മാത്രം.');return;}
+  if(cat!=='PRADEMIC'&&_nonRelay>3){alert('[X] '+cat+': റിലേ ഒഴികെ പരമാവധി 3 ഇനങ്ങള് മാത്രം.');return;}
+
+  for(var i=0;i<M.selEvts.length;i++){
+    var evt=M.selEvts[i];
+    var relay=isRelay(evt);
+    var existing=M.regs.filter(function(r){
+      return r.school===USER.school && r.events.indexOf(evt)>=0 && r.category===cat && r.gender===gen;
+    });
+    if(relay&&existing.length>=4){alert('[X] RELAY "'+evt+'" - '+cat+' '+gen+' - Your school already has 4 members registered.');return;}
+    if(!relay&&existing.length>=1){alert('[X] "'+evt+'" ('+cat+' '+gen+') - Your school already has a student registered.\n\nOnly 1 student per school per event is allowed.');return;}
+  }
+
+  // Check if registration is enabled for this school
+  var schoolDoc=M.schools.find(function(s){return s.name===USER.school;});
+  if(schoolDoc&&schoolDoc.regEnabled===false){
+    alert('Registration is DISABLED. Contact district officials.');
+    return;
+  }
+  var btn=document.getElementById('addRegBtn');
+  btn.disabled=true;btn.innerHTML='<span>... Saving...</span>';
+  try{
+    var id=Date.now();
+    await DB.collection('registrations').doc(String(id)).set({
+      id:id,regNo:genRegNo(USER.school),name:name,school:USER.school,
+      dob:dob,class:cls,category:cat,gender:gen,photo:M._photoB64||'',events:[].concat(M.selEvts),bib:''
+    });
+    ['rName','rDOB'].forEach(function(x){document.getElementById(x).value='';});
+    document.getElementById('rClass').value='';
+    document.getElementById('rCat').value='';
+    document.getElementById('rGen').value='';
+    M.selEvts=[];document.getElementById('chips').innerHTML='';clearPhoto();
+    toast('[OK] '+name+' registered!');
+  }catch(e){alert('[X] Save failed: '+e.message);}
+  finally{btn.disabled=false;btn.innerHTML='+ Add Registration';}
+}
+function renderRegs(){
+  // Update registration status banner
+  var banner=document.getElementById('regStatusBanner');
+  if(banner&&USER){
+    var sch=M.schools.find(function(s){return s.name===USER.school;});
+    if(sch&&sch.regEnabled===false){
+      banner.innerHTML='<div class="alert al-d" style="margin-bottom:12px">[OFF] <strong>Registration is currently DISABLED</strong> for your school by district. New registrations cannot be added.</div>';
+      var addBtn=document.getElementById('addRegBtn');if(addBtn)addBtn.disabled=true;
+    }else{
+      banner.innerHTML='<div class="alert al-s" style="margin-bottom:12px">[ON] Registration is <strong>ENABLED</strong>. You can add students.</div>';
+      var addBtn=document.getElementById('addRegBtn');if(addBtn)addBtn.disabled=false;
+    }
+  }
+  var tb=document.getElementById('regBody');
+  var rows=M.regs.filter(function(r){return r.school===USER.school;});
+  if(!rows.length){tb.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--txt2);padding:28px">No registrations yet</td></tr>';return;}
+  var sch=M.schools.find(function(s){return s.name===USER.school;});
+  var regOpen=!(sch&&sch.regEnabled===false);
+  tb.innerHTML=rows.map(function(r){
+    var actionBtns='';
+    if(regOpen){
+      actionBtns='<button class="bw sm" onclick="openEditReg('+r.id+')" style="padding:5px 9px;margin-right:4px" title="Edit">✏️</button>';
+    }
+    actionBtns+='<button class="bd sm" onclick="delReg('+r.id+')" style="padding:5px 9px" title="Delete">🗑️</button>';
+    return '<tr><td><strong>'+r.regNo+'</strong></td>'
+      +'<td style="color:var(--gold);font-weight:700">'+(r.bib||'-')+'</td>'
+      +'<td>'+r.name+'</td><td>'+r.class+'</td>'
+      +'<td><span class="bdg bdg-y">'+r.category+'</span></td>'
+      +'<td><span class="bdg '+(r.gender==='Boys'?'bdg-b':'bdg-t')+'">'+r.gender+'</span></td>'
+      +'<td style="font-size:.8rem;max-width:200px">'+r.events.join(', ')+'</td>'
+      +'<td>'+actionBtns+'</td></tr>';
+  }).join('');
+}
+async function delReg(id){
+  if(!confirm('Delete this registration?'))return;
+  try{await DB.collection('registrations').doc(String(id)).delete();toast('[DEL] Deleted');}
+  catch(e){alert('[X] Delete failed: '+e.message);}
+}
+
+// ── EDIT REGISTRATION ───────────────────────────
+function openEditReg(id){
+  // Only allow if registration is open
+  var sch=M.schools.find(function(s){return s.name===USER.school;});
+  if(sch&&sch.regEnabled===false){alert('Registration is DISABLED. You cannot edit at this time.');return;}
+  var r=M.regs.find(function(x){return x.id===id;});
+  if(!r){alert('Registration not found');return;}
+  // Build event chips for current cat+gen
+  var cat=r.category,gen=r.gender;
+  var evts=(M.cfg.events[cat]||{})[gen]||[];
+  var chipsHtml=evts.map(function(e){
+    var relay=isRelay(e);
+    var maxSlots=relay?4:1;
+    // Count others from same school (excluding current student for non-relay)
+    var existing=M.regs.filter(function(x){
+      return x.school===USER.school && x.events.indexOf(e)>=0 && x.category===cat && x.gender===gen && x.id!==id;
+    });
+    var used=existing.length;
+    var selected=r.events.indexOf(e)>=0;
+    var full=!selected&&used>=maxSlots;
+    if(full){
+      return '<div class="chip disabled" title="'+(relay?'RELAY: '+maxSlots+' slots full':'Already registered from school')+'">'+e+(relay?'<span class="chip-cnt">'+used+'/'+maxSlots+'</span>':'')+'</div>';
+    }
+    return '<div class="chip'+(selected?' on':'')+'" data-evt="'+e+'" onclick="toggleEditChip(this,\''+cat+'\',\''+gen+'\')">'+e+(relay?'<span class="chip-cnt">'+used+'/'+maxSlots+'</span>':'')+'</div>';
+  }).join('');
+  // Class options
+  var classOpts=[1,2,3,4,5,6,7,8,9,10,11,12].map(function(n){
+    var labels=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+    return '<option value="'+n+'"'+(parseInt(r.class)===n?' selected':'')+'>'+labels[n-1]+'</option>';
+  }).join('');
+  document.getElementById('editRegForm').innerHTML=
+    '<div style="background:rgba(249,198,66,.06);border:1px solid rgba(249,198,66,.2);border-radius:10px;padding:12px 16px;margin-bottom:18px">'
+    +'<div style="font-size:.8rem;color:var(--txt2);margin-bottom:2px">Registration No</div>'
+    +'<div style="font-weight:700;color:var(--gold)">'+r.regNo+'</div></div>'
+    +'<div class="g2" style="margin-bottom:14px">'
+    +'<div class="form-group"><label class="form-label">Student Name</label>'
+    +'<input type="text" id="er_name" value="'+r.name+'"></div>'
+    +'<div class="form-group"><label class="form-label">Date of Birth</label>'
+    +'<input type="date" id="er_dob" value="'+r.dob+'"></div>'
+    +'</div>'
+    +'<div class="form-group" style="margin-bottom:14px"><label class="form-label">Class</label>'
+    +'<select id="er_class"><option value="">Select</option>'+classOpts+'</select></div>'
+    +'<div style="background:rgba(11,15,26,.5);border:1px solid var(--bdr);border-radius:10px;padding:14px;margin-bottom:16px">'
+    +'<div class="form-label" style="margin-bottom:8px">Events — <span class="bdg bdg-y">'+cat+'</span> <span class="bdg '+(gen==='Boys'?'bdg-b':'bdg-t')+'">'+gen+'</span></div>'
+    +'<div id="er_chips" class="chips">'+chipsHtml+'</div>'
+    +'<div style="font-size:.78rem;color:var(--txt2);margin-top:8px">ℹ️ Category / Gender മാറ്റുവാൻ ഈ entry delete ചെയ്ത് പുതിയത് add ചെയ്യുക.</div>'
+    +'</div>'
+    +'<button class="bg w100" onclick="saveEditReg('+id+')">✅ Save Changes</button>';
+  // Store editing id
+  document.getElementById('editRegForm').dataset.editId=id;
+  document.getElementById('editRegModal').classList.add('on');
+}
+function toggleEditChip(el,cat,gen){
+  var e=el.dataset.evt;
+  var relay=isRelay(e);
+  var chips=document.querySelectorAll('#er_chips .chip:not(.disabled)');
+  var selEvts=[];
+  chips.forEach(function(c){if(c.classList.contains('on'))selEvts.push(c.dataset.evt);});
+  var idx=selEvts.indexOf(e);
+  if(idx>=0){
+    // deselect
+    el.classList.remove('on');
+  }else{
+    // check limits
+    var rule=evtLimitFor(cat);
+    var selNonRelay=selEvts.filter(function(x){return !isRelay(x);}).length;
+    var thisCountable=rule.countRelay?true:!relay;
+    var countable=rule.countRelay?selEvts.length:selNonRelay;
+    if(thisCountable&&countable>=rule.max){
+      alert('[!] '+cat+' '+(cat==='PRADEMIC'?'പരമാവധി 2 ഇനങ്ങൾ':'റിലേ ഒഴികെ പരമാവധി 3 ഇനങ്ങൾ')+'.');
+      return;
+    }
+    el.classList.add('on');
+  }
+}
+async function saveEditReg(id){
+  var name=document.getElementById('er_name').value.trim();
+  var dob=document.getElementById('er_dob').value;
+  var cls=document.getElementById('er_class').value;
+  if(!name||!dob||!cls){alert('[!] Name, DOB, Class fill ചെയ്യുക');return;}
+  var chips=document.querySelectorAll('#er_chips .chip:not(.disabled)');
+  var selEvts=[];
+  chips.forEach(function(c){if(c.classList.contains('on'))selEvts.push(c.dataset.evt);});
+  if(!selEvts.length){alert('[!] ഒരു event എങ്കിലും select ചെയ്യുക');return;}
+  var r=M.regs.find(function(x){return x.id===id;});
+  if(!r)return;
+  try{
+    await DB.collection('registrations').doc(String(id)).update({name:name,dob:dob,class:cls,events:selEvts});
+    closeM('editRegModal');toast('[OK] Registration updated!');
+  }catch(e){alert('[X] Save failed: '+e.message);}
+}
+function printRegList(){
+  var rows=M.regs.filter(function(r){return r.school===USER.school;});
+  if(!rows.length){alert('[X] No registrations');return;}
+  doPDF('<h2>BVN Kollam Athletic Meet - Registration List</h2>'
+    +'<p><strong>School:</strong> '+USER.school+' &nbsp;|&nbsp; <strong>Date:</strong> '+new Date().toLocaleDateString()+'</p>'
+    +'<table><thead><tr><th>Reg No</th><th>BIB</th><th>Name</th><th>Class</th><th>Category</th><th>Gender</th><th>Events</th></tr></thead>'
+    +'<tbody>'+rows.map(function(r){return'<tr><td>'+r.regNo+'</td><td style="font-weight:bold;color:#d4af37">'+(r.bib||'-')+'</td><td>'+r.name+'</td><td>'+r.class+'</td><td>'+r.category+'</td><td>'+r.gender+'</td><td>'+r.events.join(', ')+'</td></tr>';}).join('')+'</tbody></table>');
+}
+
+function downloadSchoolResults(){
+  if(!USER||USER.type!=='school'){return;}
+  var school=USER.school;
+  // Get all registrations for this school
+  var schoolRegs=M.regs.filter(function(r){return r.school===school;});
+  if(!schoolRegs.length){alert('[X] നിങ്ങളുടെ വിദ്യാലയത്തിൽ registrations ഇല്ല.');return;}
+  var schoolRegIds=schoolRegs.map(function(r){return r.id;});
+  // Get all results where school's students placed
+  var schoolResults=M.results.filter(function(r){return schoolRegIds.indexOf(r.regId)>=0;});
+  if(!schoolResults.length){alert('[X] നിങ്ങളുടെ വിദ്യാലയം ഇതുവരെ ഒരു result-ഉം നേടിയിട്ടില്ല.');return;}
+  // Calculate totals
+  var totalPts=schoolResults.reduce(function(s,r){return s+(r.points||0);},0);
+  var gold=schoolResults.filter(function(r){return r.position===1;}).length;
+  var silver=schoolResults.filter(function(r){return r.position===2;}).length;
+  var bronze=schoolResults.filter(function(r){return r.position===3;}).length;
+  var medals=['🥇','🥈','🥉'];
+  var posLabel=['1st Place','2nd Place','3rd Place'];
+  var posColor=['#d4a843','#94a3b8','#b45309'];
+  // Build rows grouped by event
+  var groups={};
+  schoolResults.forEach(function(r){
+    var k=r.event+'|'+r.category+'|'+r.gender;
+    if(!groups[k])groups[k]=[];
+    groups[k].push(r);
+  });
+  var tableRows=Object.keys(groups).sort().map(function(k){
+    var parts=k.split('|'),evt=parts[0],cat=parts[1],gen=parts[2];
+    return groups[k].map(function(r){
+      var reg=M.regs.find(function(x){return x.id===r.regId;});
+      return'<tr>'
+        +'<td style="font-weight:bold;color:#d4a843">'+medals[r.position-1]+' '+posLabel[r.position-1]+'</td>'
+        +'<td style="font-weight:bold">'+evt+'</td>'
+        +'<td>'+cat+'</td><td>'+gen+'</td>'
+        +'<td style="font-weight:bold;color:#1e3a5f">'+(reg?reg.name:'N/A')+'</td>'
+        +'<td style="color:#555">'+(reg?'Class '+reg.class:'')+'</td>'
+        +'<td style="font-weight:bold;color:#d4a843">'+r.points+' pts</td>'
+        +'</tr>';
+    }).join('');
+  }).join('');
+  doPDF(
+    '<h2>BVN Kollam Athletic Meet — Results</h2>'
+    +'<p><strong>School:</strong> '+school+' &nbsp;|&nbsp; <strong>Date:</strong> '+new Date().toLocaleDateString()+'</p>'
+    +'<div style="background:#fffbea;border:1px solid #d4a843;border-radius:8px;padding:14px 20px;margin:16px 0;display:flex;gap:24px;flex-wrap:wrap">'
+    +'<span>🥇 Gold: <strong>'+gold+'</strong></span>'
+    +'<span>🥈 Silver: <strong>'+silver+'</strong></span>'
+    +'<span>🥉 Bronze: <strong>'+bronze+'</strong></span>'
+    +'<span style="margin-left:auto;font-size:1.1em">Total Points: <strong style="color:#d4a843">'+totalPts+'</strong></span>'
+    +'</div>'
+    +'<table><thead><tr><th>Medal</th><th>Event</th><th>Category</th><th>Gender</th><th>Student</th><th>Class</th><th>Points</th></tr></thead>'
+    +'<tbody>'+tableRows+'</tbody></table>'
+  );
+}
+
+//
+//  RESULTS
+//
+function updResDD(){
+  var cat=document.getElementById('eCat').value,gen=document.getElementById('eGen').value;
+  var sel=document.getElementById('eEvt');sel.innerHTML='<option value="">Event</option>';
+  if(cat&&gen){
+    var evts=[];
+    M.regs.filter(function(r){return r.category===cat&&r.gender===gen;})
+      .forEach(function(r){r.events.forEach(function(e){if(evts.indexOf(e)<0)evts.push(e);});});
+    evts.forEach(function(e){sel.innerHTML+='<option value="'+e+'">'+e+'</option>';});
+  }
+}
+function loadParticipants(){
+  var cat=document.getElementById('eCat').value,gen=document.getElementById('eGen').value,evt=document.getElementById('eEvt').value;
+  [1,2,3].forEach(function(i){document.getElementById('p'+i).innerHTML='<option value="">-- Select --</option>';});
+  if(!cat||!gen||!evt)return;
+  var isOfficial=USER&&USER.type==='official';
+  var ps=M.regs.filter(function(r){return r.category===cat&&r.gender===gen&&r.events.indexOf(evt)>=0;});
+  ps.sort(function(a,b){return Number(a.bib||0)-Number(b.bib||0);});
+  var opts;
+  if(isRelay(evt)){
+    var schools={};
+    ps.forEach(function(p){if(!schools[p.school])schools[p.school]=[];schools[p.school].push(p);});
+    opts=Object.keys(schools).map(function(sc){
+      var bibs=schools[sc].map(function(p){return p.bib||'?';}).join(',');
+      var label=isOfficial?'BIB: '+bibs:sc+' ('+bibs+')';
+      return'<option value="school:'+sc+'">'+label+'</option>';
+    }).join('');
+  }else{
+    opts=ps.map(function(p){
+      var label=isOfficial
+        ?(p.bib?'BIB '+p.bib:'No BIB - '+p.name)
+        :((p.bib?p.bib+' - ':'')+p.name+' ('+p.school+')');
+      return'<option value="'+p.id+'">'+label+'</option>';
+    }).join('');
+  }
+  [1,2,3].forEach(function(i){document.getElementById('p'+i).innerHTML='<option value="">-- Select --</option>'+opts;});
+  fillPts();
+}
+function fillPts(){document.getElementById('pt1').value=M.PTS[1]+' pts';document.getElementById('pt2').value=M.PTS[2]+' pts';document.getElementById('pt3').value=M.PTS[3]+' pt';}
+async function saveRes(){
+  var cat=document.getElementById('eCat').value,gen=document.getElementById('eGen').value,evt=document.getElementById('eEvt').value;
+  if(!cat||!gen||!evt){alert('[!] Select category, gender and event');return;}
+  var p1=document.getElementById('p1').value,p2=document.getElementById('p2').value,p3=document.getElementById('p3').value;
+  if(!p1&&!p2&&!p3){alert('[!] Select at least one participant');return;}
+  var btn=document.getElementById('saveResBtn');btn.disabled=true;btn.textContent='... Saving...';
+  try{
+    var old=M.results.filter(function(r){return r.event===evt&&r.category===cat&&r.gender===gen;});
+    var batch=DB.batch();
+    old.forEach(function(r){batch.delete(DB.collection('results').doc(String(r.id)));});
+    function resolve(val,pos){
+      if(!val)return[];
+      if(val.indexOf('school:')===0){
+        var sc=val.replace('school:','');
+        return M.regs.filter(function(r){return r.school===sc&&r.category===cat&&r.gender===gen&&r.events.indexOf(evt)>=0;}).map(function(r){return r.id;});
+      }
+      return[parseInt(val)];
+    }
+    [[1,p1],[2,p2],[3,p3]].forEach(function(x){
+      var pos=x[0],val=x[1];if(!val)return;
+      resolve(val,pos).forEach(function(pid){
+        var id=Date.now()+pos+Math.random();
+        batch.set(DB.collection('results').doc(String(id)),{id:id,category:cat,gender:gen,event:evt,position:pos,regId:pid,points:M.PTS[pos]});
+      });
+    });
+    await batch.commit();toast('[OK] Result saved!');
+  }catch(e){alert('[X] Save failed: '+e.message);}
+  finally{btn.disabled=false;btn.textContent='[OK] Save Result';}
+}
+function renderResList(){
+  var con=document.getElementById('resList');
+  if(!M.results.length){con.innerHTML='<div class="alert al-w">No results entered yet</div>';return;}
+  var groups={};
+  M.results.forEach(function(r){var k=r.event+'|'+r.category+'|'+r.gender;if(!groups[k])groups[k]=[];groups[k].push(r);});
+  var html='';
+  Object.keys(groups).sort().forEach(function(k){
+    var rs=groups[k].sort(function(a,b){return a.position-b.position;});
+    var f=rs[0];
+    var positions={};rs.forEach(function(r){if(!positions[r.position])positions[r.position]=[];positions[r.position].push(r);});
+    html+='<div class="res-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
+      +'<div><strong style="color:var(--gold);font-size:1rem">'+f.event+'</strong> '
+      +'<span class="bdg bdg-y">'+f.category+'</span> <span class="bdg bdg-b">'+f.gender+'</span></div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<button class="bw sm" onclick="openEdit(\''+k+'\')">[EDIT]</button>'
+      +'<button class="bd sm" onclick="delRes(\''+k+'\')">[DEL]</button>'
+      +'</div></div>'
+      +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">';
+    [1,2,3].forEach(function(pos){
+      var posRs=positions[pos]||[];var medals=['1st','2nd','3rd'];
+      if(!posRs.length){
+        html+='<div style="background:rgba(255,255,255,.03);padding:12px;border-radius:10px;opacity:.4">'
+          +'<div style="font-size:.75rem;color:var(--txt2)">'+medals[pos-1]+'</div>'
+          +'<div style="color:var(--txt2)">-</div></div>';
+      }else{
+        var names=posRs.map(function(r){var reg=M.regs.find(function(x){return x.id===r.regId;});return reg?reg.name:'N/A';});
+        var reg0=M.regs.find(function(x){return x.id===posRs[0].regId;});
+        html+='<div class="medal-box">'
+          +'<div style="font-size:.75rem;color:var(--txt2);margin-bottom:5px">'+medals[pos-1]+' '+pos+'</div>'
+          +'<div style="font-weight:600;font-size:.88rem;margin-bottom:2px">'+names.join('<br>')+'</div>'
+          +'<div style="font-size:.78rem;color:var(--txt2);margin-bottom:4px">'+(reg0?reg0.school:'')+'</div>'
+          +'<div style="font-weight:700;color:var(--gold)">'+M.PTS[pos]+' pts</div>'
+          +'</div>';
+      }
+    });
+    html+='</div></div>';
+  });
+  con.innerHTML=html;
+}
+async function delRes(key){
+  if(!confirm('Delete this result?'))return;
+  var p=key.split('|');
+  var batch=DB.batch();
+  M.results.filter(function(r){return r.event===p[0]&&r.category===p[1]&&r.gender===p[2];})
+    .forEach(function(r){batch.delete(DB.collection('results').doc(String(r.id)));});
+  try{await batch.commit();toast('[DEL] Result deleted');}catch(e){alert('[X] '+e.message);}
+}
+function openEdit(key){
+  var p=key.split('|'),evt=p[0],cat=p[1],gen=p[2];
+  var rs=M.results.filter(function(r){return r.event===evt&&r.category===cat&&r.gender===gen;});
+  var ps=M.regs.filter(function(r){return r.category===cat&&r.gender===gen&&r.events.indexOf(evt)>=0;});
+  var opts=ps.map(function(p){return'<option value="'+p.id+'">'+(p.bib?p.bib+' - ':'')+p.name+' ('+p.school+')</option>';}).join('');
+  function mkSel(pos){var r=rs.find(function(x){return x.position===pos;});var sel=r?r.regId:'';return'<option value="">-- None --</option>'+opts.replace('value="'+sel+'"','value="'+sel+'" selected');}
+  document.getElementById('editForm').innerHTML=
+    '<p style="color:var(--txt2);margin-bottom:16px"><strong style="color:var(--gold)">'+evt+' - '+cat+' '+gen+'</strong></p>'
+    +'<div class="g3">'
+    +'<div><label class="form-label">1st 1st (5 Pts)</label><select id="ep1">'+mkSel(1)+'</select></div>'
+    +'<div><label class="form-label">2nd 2nd (3 Pts)</label><select id="ep2">'+mkSel(2)+'</select></div>'
+    +'<div><label class="form-label">3rd 3rd (1 Pt)</label><select id="ep3">'+mkSel(3)+'</select></div>'
+    +'</div>'
+    +'<button class="bg w100" onclick="saveEdit(\''+evt+'\',\''+cat+'\',\''+gen+'\')" style="margin-top:14px">[OK] Save Changes</button>';
+  document.getElementById('editModalTitle').textContent='✏️ Edit Result';
+  document.getElementById('editModal').classList.add('on');
+}
+async function saveEdit(evt,cat,gen){
+  var del=M.results.filter(function(r){return r.event===evt&&r.category===cat&&r.gender===gen;});
+  var batch=DB.batch();del.forEach(function(r){batch.delete(DB.collection('results').doc(String(r.id)));});
+  [[1,'ep1'],[2,'ep2'],[3,'ep3']].forEach(function(x){
+    var pos=x[0],pid=document.getElementById(x[1]).value;if(!pid)return;
+    var id=Date.now()+pos;
+    batch.set(DB.collection('results').doc(String(id)),{id:id,category:cat,gender:gen,event:evt,position:pos,regId:parseInt(pid),points:M.PTS[pos]});
+  });
+  try{await batch.commit();closeM('editModal');toast('[OK] Result updated!');}catch(e){alert('[X] '+e.message);}
+}
+
+//
+//  VIEW / PUBLIC RESULTS
+//
+function viewRes(){
+  var cf=document.getElementById('vCat').value,gf=document.getElementById('vGen').value;
+  var f=M.results;
+  if(cf!=='all')f=f.filter(function(r){return r.category===cf;});
+  if(gf!=='all')f=f.filter(function(r){return r.gender===gf;});
+  document.getElementById('viewDisp').innerHTML=f.length?mkResTable(f):'<div class="alert al-w">No results</div>';
+}
+function pubFilterChange(){
+  // Rebuild event dropdown based on cat+gen filter, then reset result display
+  var cf=document.getElementById('pubCat').value,gf=document.getElementById('pubGen').value;
+  var evtSel=document.getElementById('pubEvt');
+  // Collect unique events from results matching current cat/gen filter
+  var evts=[];
+  M.results.forEach(function(r){
+    var ok=true;
+    if(cf!=='all'&&r.category!==cf)ok=false;
+    if(gf!=='all'&&r.gender!==gf)ok=false;
+    if(ok&&evts.indexOf(r.event)<0)evts.push(r.event);
+  });
+  evts.sort();
+  evtSel.innerHTML='<option value="">-- Select an Event --</option>'
+    +evts.map(function(e){return'<option value="'+e+'">'+e+'</option>';}).join('');
+  // Clear display until an event is chosen
+  document.getElementById('pubDisp').innerHTML='<div class="alert al-i">⬆️ ഒരു event select ചെയ്ത് result കാണുക.</div>';
+}
+function pubRes(){
+  var cf=document.getElementById('pubCat').value,gf=document.getElementById('pubGen').value;
+  var ef=document.getElementById('pubEvt').value;
+  // Require an event to be selected
+  if(!ef){
+    document.getElementById('pubDisp').innerHTML='<div class="alert al-i">⬆️ ഒരു event select ചെയ്ത് result കാണുക.</div>';
+    return;
+  }
+  var f=M.results;
+  if(cf!=='all')f=f.filter(function(r){return r.category===cf;});
+  if(gf!=='all')f=f.filter(function(r){return r.gender===gf;});
+  f=f.filter(function(r){return r.event===ef;});
+  document.getElementById('pubDisp').innerHTML=f.length?mkResCards(f):'<div class="alert al-w">ഈ event-ന് result ഇല്ല.</div>';
+}
+function mkResCards(data){
+  // Group by event+gender
+  var groups={};
+  data.forEach(function(r){
+    var k=r.category+'||'+r.event+'||'+r.gender;
+    if(!groups[k])groups[k]=[];
+    groups[k].push(r);
+  });
+  var posLabel=['1st \u{1F947}','2nd \u{1F948}','3rd \u{1F949}'];
+  var posColor=['#f9c642','#94a3b8','#b45309'];
+  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px">';
+  Object.keys(groups).sort().forEach(function(k){
+    var parts=k.split('||'),cat=parts[0],evtName=parts[1],gen=parts[2];
+    var winners=groups[k].slice().sort(function(a,b){return a.position-b.position;}).slice(0,3);
+    var cardId='evtcard-'+k.replace(/[^a-zA-Z0-9]/g,'_');
+    html+='<div style="background:rgba(6,16,30,.85);border:1px solid rgba(249,198,66,.25);border-radius:16px;overflow:hidden">';
+    // Card header
+    html+='<div style="background:linear-gradient(135deg,rgba(212,168,67,.25),rgba(6,16,30,0));padding:14px 16px;border-bottom:1px solid rgba(249,198,66,.15)">'
+      +'<div style="font-weight:800;font-size:1rem;color:var(--gold)">'+evtName+'</div>'
+      +'<div style="display:flex;gap:8px;margin-top:6px">'
+      +'<span style="font-size:.7rem;background:rgba(212,168,67,.15);color:var(--gold);padding:2px 10px;border-radius:99px;border:1px solid rgba(212,168,67,.3)">'+cat+'</span>'
+      +'<span style="font-size:.7rem;background:'+(gen==='Boys'?'rgba(96,165,250,.15)':'rgba(244,114,182,.15)')+';color:'+(gen==='Boys'?'#60a5fa':'#f472b6')+';padding:2px 10px;border-radius:99px">'+gen+'</span>'
+      +'</div></div>';
+    // Winners list
+    html+='<div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px">';
+    winners.forEach(function(r){
+      var reg=M.regs.find(function(x){return x.id===r.regId;});
+      var pos=r.position-1;
+      var photoEl=reg&&reg.photo
+        ?'<img src="'+reg.photo+'" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid '+posColor[pos]+';flex-shrink:0">'
+        :'<div style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid '+posColor[pos]+';display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">\u{1F464}</div>';
+      html+='<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:8px 10px">'
+        +photoEl
+        +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:.85rem;font-weight:700;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(reg?reg.name:'N/A')+'</div>'
+        +'<div style="font-size:.72rem;color:var(--txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(reg?reg.school:'')+'</div>'
+        +'</div>'
+        +'<span style="font-size:.72rem;font-weight:700;color:'+posColor[pos]+';white-space:nowrap">'+posLabel[pos]+'</span>'
+        +'</div>';
+    });
+    html+='</div>';
+    // Download button
+    html+='<div style="padding:10px 14px;border-top:1px solid rgba(255,255,255,.06)">'
+      +'<button class="bp sm" style="width:100%;justify-content:center" '
+      +'onclick="dlEvtCard(\''+evtName.replace(/'/g,"\\'")+"','"+cat+"','"+gen+"')\">"
+      +'&#11015; Download</button>'
+      +'</div></div>';
+  });
+  html+='</div>';
+  return html;
+}
+
+// ── WHATSAPP STATUS CARD GENERATOR (1080 x 1920) ──────────────────────────
+function dlEvtCard(evtName, cat, gen){
+  var W=1080, H=1920;
+  var winners=M.results
+    .filter(function(r){return r.event===evtName&&r.category===cat&&r.gender===gen;})
+    .sort(function(a,b){return a.position-b.position;}).slice(0,3);
+
+  // Pre-load photos + logo together
+  var imgMap={};
+  var photoLoads=winners.map(function(r){
+    var reg=M.regs.find(function(x){return x.id===r.regId;});
+    if(!reg||!reg.photo) return Promise.resolve();
+    return new Promise(function(res){
+      var im=new Image();
+      im.onload=function(){ imgMap[r.regId]=im; res(); };
+      im.onerror=res;
+      im.src=reg.photo;
+    });
+  });
+  var logoLoad=new Promise(function(res){
+    if(!window._BVN){ res(null); return; }
+    var lm=new Image();
+    lm.onload=function(){ res(lm); };
+    lm.onerror=function(){ res(null); };
+    lm.src=window._BVN;
+  });
+
+  Promise.all([logoLoad].concat(photoLoads)).then(function(results){
+    var logoImg=results[0];
+    var canvas=document.createElement('canvas');
+    canvas.width=W; canvas.height=H;
+    var ctx=canvas.getContext('2d');
+
+    /* ── BACKGROUND ── */
+    var bg=ctx.createLinearGradient(0,0,W,H);
+    bg.addColorStop(0,'#06101e'); bg.addColorStop(0.5,'#0d1f38'); bg.addColorStop(1,'#06101e');
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+    /* ── BORDER ── */
+    ctx.strokeStyle='rgba(212,168,67,0.55)'; ctx.lineWidth=7; ctx.strokeRect(24,24,W-48,H-48);
+    ctx.strokeStyle='rgba(212,168,67,0.18)'; ctx.lineWidth=2; ctx.strokeRect(38,38,W-76,H-76);
+
+    /* ── HEADER GLOW ── */
+    var hg=ctx.createLinearGradient(0,50,0,380);
+    hg.addColorStop(0,'rgba(212,168,67,0.2)'); hg.addColorStop(1,'rgba(212,168,67,0)');
+    ctx.fillStyle=hg; ctx.fillRect(50,50,W-100,330);
+
+    /* ── HELPERS ── */
+    var div=ctx.createLinearGradient(80,0,W-80,0);
+    div.addColorStop(0,'rgba(212,168,67,0)');
+    div.addColorStop(0.5,'rgba(212,168,67,0.85)');
+    div.addColorStop(1,'rgba(212,168,67,0)');
+    function divLine(y){ ctx.save(); ctx.strokeStyle=div; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(80,y); ctx.lineTo(W-80,y); ctx.stroke(); ctx.restore(); }
+    function txt(t,x,y,sz,col,align,wt,maxW){
+      ctx.save(); ctx.font=(wt||'bold')+' '+sz+'px Arial';
+      ctx.fillStyle=col; ctx.textAlign=align||'center'; ctx.textBaseline='middle';
+      if(maxW) ctx.fillText(t,x,y,maxW); else ctx.fillText(t,x,y); ctx.restore();
+    }
+
+    /* ── LOGO ── */
+    if(logoImg){
+      var lw=88,lh=108;
+      ctx.drawImage(logoImg,W/2-lw/2,54,lw,lh);
+    }
+
+    /* ── HEADER TEXT  (logo bottom ~162) ── */
+    txt('\u0d2d\u0d3e\u0d30\u0d24\u0d40\u0d2f \u0d35\u0d3f\u0d26\u0d4d\u0d2f\u0d3e \u0d28\u0d3f\u0d15\u0d47\u0d24\u0d7b',W/2,192,44,'#f9c642','center','bold');
+    txt('Bharatheeya Vidya Nikethan, Kollam',W/2,248,33,'rgba(255,255,255,0.82)','center','600');
+    txt('\u0d15\u0d4a\u0d32\u0d4d\u0d32\u0d02 \u0d1c\u0d3f\u0d32\u0d4d\u0d32\u0d3e \u0d15\u0d3e\u0d2f\u0d3f\u0d15\u0d2e\u0d47\u0d33',W/2,298,38,'rgba(212,168,67,0.92)','center','bold');
+    divLine(336);
+
+    /* ── CATEGORY + GENDER CHIPS  y=396 ── */
+    var catColors={'PRADEMIC':'#a78bfa','SISU':'#34d399','BALA':'#60a5fa','KISHORE':'#fb7185'};
+    var catC=catColors[cat]||'#f9c642';
+    var genC=gen==='Boys'?'#60a5fa':'#f472b6';
+    function chip(label,cx,cy,color){
+      ctx.save();
+      ctx.font='bold 30px Arial';
+      var tw=ctx.measureText(label).width+64;
+      ctx.beginPath(); ctx.roundRect(cx-tw/2,cy-30,tw,60,30);
+      ctx.fillStyle=color+'2a'; ctx.fill();
+      ctx.strokeStyle=color; ctx.lineWidth=2.5; ctx.stroke();
+      ctx.fillStyle=color; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillText(label,cx,cy); ctx.restore();
+    }
+    chip(cat,W/2-160,396,catC);
+    chip(gen,W/2+160,396,genC);
+
+    /* ── EVENT NAME  y=500 ── */
+    var evtDisplay=evtName.length>18?evtName.substring(0,17)+'\u2026':evtName;
+    txt(evtDisplay,W/2,500,76,'#ffffff','center','bold');
+
+    divLine(548);
+
+    /* ── WINNER CARDS  start y=660 ── */
+    var posGrad=[['#f9c642','#e08b00'],['#b0bec5','#78909c'],['#cd7f32','#8d4b00']];
+    var posEmoji=['🥇','🥈','🥉'];
+    var posLabel2=['1st Place','2nd Place','3rd Place'];
+    var cardY=580, cardH=360, cardGap=22;
+
+    winners.forEach(function(r,idx){
+      var reg=M.regs.find(function(x){return x.id===r.regId;});
+      if(!reg) return;
+      var cy=cardY+idx*(cardH+cardGap);
+      var cx=72, cw=W-144, ch=cardH;
+
+      // Card bg
+      var cbg=ctx.createLinearGradient(cx,cy,cx+cw,cy+ch);
+      cbg.addColorStop(0,'rgba(255,255,255,0.08)'); cbg.addColorStop(1,'rgba(255,255,255,0.02)');
+      ctx.save(); ctx.beginPath(); ctx.roundRect(cx,cy,cw,ch,26);
+      ctx.fillStyle=cbg; ctx.fill();
+      ctx.strokeStyle=posGrad[idx][0]+'99'; ctx.lineWidth=3; ctx.stroke(); ctx.restore();
+
+      // Medal strip (left 118px)
+      var pg=ctx.createLinearGradient(cx,cy,cx,cy+ch);
+      pg.addColorStop(0,posGrad[idx][0]); pg.addColorStop(1,posGrad[idx][1]);
+      ctx.save(); ctx.beginPath();
+      ctx.roundRect(cx,cy,118,ch,{topLeft:26,bottomLeft:26,topRight:0,bottomRight:0});
+      ctx.fillStyle=pg; ctx.fill(); ctx.restore();
+
+      // Medal emoji
+      txt(posEmoji[idx],cx+59,cy+ch/2-30,58,'#fff');
+      txt(posLabel2[idx],cx+59,cy+ch/2+32,22,'rgba(0,0,0,0.7)','center','bold');
+
+      // Photo circle — center at cx+220, radius 86
+      var pr=86, px=cx+118+16+pr, py=cy+ch/2;
+      ctx.save();
+      ctx.beginPath(); ctx.arc(px,py,pr+4,0,Math.PI*2);
+      ctx.strokeStyle=posGrad[idx][0]; ctx.lineWidth=4; ctx.stroke();
+      ctx.beginPath(); ctx.arc(px,py,pr,0,Math.PI*2); ctx.clip();
+      var li=imgMap[r.regId];
+      if(li){
+        ctx.drawImage(li,px-pr,py-pr,pr*2,pr*2);
+      } else {
+        ctx.fillStyle='rgba(255,255,255,0.07)'; ctx.fill();
+        ctx.font='66px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText('👤',px,py);
+      }
+      ctx.restore();
+
+      // Text area — starts after photo right edge with gap
+      var tx=px+pr+22, tw2=cw-(tx-cx)-16;
+      txt(reg.name.length>18?reg.name.substring(0,17)+'\u2026':reg.name,tx,cy+ch/2-36,50,'#f1f5f9','left','bold',tw2);
+      txt(reg.school.length>26?reg.school.substring(0,25)+'\u2026':reg.school,tx,cy+ch/2+22,30,'rgba(255,255,255,0.52)','left','normal',tw2);
+      txt('Class '+reg.class,tx,cy+ch/2+62,30,posGrad[idx][0],'left','bold',tw2);
+    });
+
+    /* ── FOOTER ── */
+    var fy=H-168;
+    divLine(fy);
+    txt('\u0d2d\u0d3e\u0d30\u0d24\u0d40\u0d2f \u0d35\u0d3f\u0d26\u0d4d\u0d2f\u0d3e \u0d28\u0d3f\u0d15\u0d47\u0d24\u0d7b \u2022 \u0d15\u0d4a\u0d32\u0d4d\u0d32\u0d02 \u0d1c\u0d3f\u0d32\u0d4d\u0d32',W/2,fy+58,30,'rgba(212,168,67,0.88)');
+    txt('Vidya Bharati Kerala',W/2,fy+106,27,'rgba(255,255,255,0.32)','center','normal');
+
+    var fn=evtName.replace(/\s+/g,'_')+'-'+cat+'-'+gen+'.png';
+    var a=document.createElement('a'); a.href=canvas.toDataURL('image/png'); a.download=fn; a.click();
+  });
+}
+
+
+//
+//  SCOREBOARD - CATEGORY COLUMNS
+//
+function renderScore(){
+  var con=document.getElementById('scoreDisp');
+  var cats=M.cfg.categories;
+  var catColors=['#a78bfa','#34d399','#60a5fa','#fb7185'];
+  var sp={};
+  M.schools.forEach(function(s){sp[s.name]={total:0,gold:0,silver:0,bronze:0};cats.forEach(function(c){sp[s.name][c]=0;});});
+  M.results.forEach(function(r){
+    var reg=M.regs.find(function(x){return x.id===r.regId;});if(!reg)return;
+    if(!sp[reg.school]){sp[reg.school]={total:0,gold:0,silver:0,bronze:0};cats.forEach(function(c){sp[reg.school][c]=0;});}
+    sp[reg.school].total+=r.points;
+    sp[reg.school][r.category]=(sp[reg.school][r.category]||0)+r.points;
+    if(r.position===1)sp[reg.school].gold++;
+    if(r.position===2)sp[reg.school].silver++;
+    if(r.position===3)sp[reg.school].bronze++;
+  });
+  var sorted=Object.entries(sp).sort(function(a,b){return b[1].total-a[1].total;});
+  if(!sorted.length||sorted.every(function(x){return x[1].total===0;})){
+    con.innerHTML='<div class="alert al-i">No results yet. Scoreboard updates live as results are entered.</div>';return;
+  }
+  var html='<div class="tbl-wrap"><table><thead><tr>'
+    +'<th>Rank</th><th>School</th>'
+    +cats.map(function(c,i){return'<th style="color:'+catColors[i]+'"><span class="cat-dot" style="background:'+catColors[i]+'"></span>'+c+'</th>';}).join('')
+    +'<th>1st</th><th>2nd</th><th>3rd</th><th style="color:var(--gold)">Total</th>'
+    +'</tr></thead><tbody>'
+    +sorted.map(function(x,i){
+      var s=x[0],p=x[1];
+      return'<tr '+(i===0?'class="sb-row-top"':'')+'>'
+        +'<td><strong style="'+(i===0?'color:var(--gold);font-size:1.1rem':'')+'}">'+(i===0?'Top':i+1)+'</strong></td>'
+        +'<td><strong>'+(i===0?'<span style="color:var(--gold)">'+s+'</span>':s)+'</strong></td>'
+        +cats.map(function(c,ci){return'<td style="color:'+(p[c]>0?catColors[ci]:catColors[ci]+'88')+'"><strong>'+p[c]+'</strong></td>';}).join('')
+        +'<td style="color:#fbbf24;font-weight:700">'+p.gold+'</td>'
+        +'<td style="color:#94a3b8;font-weight:700">'+p.silver+'</td>'
+        +'<td style="color:#b45309;font-weight:700">'+p.bronze+'</td>'
+        +'<td><strong style="color:var(--gold);font-size:1.1rem">'+p.total+'</strong></td>'
+        +'</tr>';
+    }).join('')
+    +'</tbody></table></div>';
+  con.innerHTML=html;
+}
+
+//
+//  ORDER OF EVENTS
+//
+(function(){
+  function updateOeEvents(){
+    var cat=document.getElementById('oeEvtCat').value;
+    var gen=document.getElementById('oeEvtGen').value;
+    var sel=document.getElementById('oeEvtName');
+    sel.innerHTML='<option value="">Event</option>';
+    if(!cat)return;
+    var evts=[];
+    var gens=(gen==='Both'||!gen)?['Boys','Girls']:[gen];
+    gens.forEach(function(g){((M.cfg.events[cat]||{})[g]||[]).forEach(function(e){if(evts.indexOf(e)<0)evts.push(e);});});
+    evts.sort().forEach(function(e){sel.innerHTML+='<option value="'+e+'">'+e+'</option>';});
+  }
+  document.getElementById('oeEvtCat').addEventListener('change',updateOeEvents);
+  document.getElementById('oeEvtGen').addEventListener('change',updateOeEvents);
+})();
+
+async function addOE(){
+  var cat=document.getElementById('oeEvtCat').value,gen=document.getElementById('oeEvtGen').value;
+  var name=document.getElementById('oeEvtName').value,time=document.getElementById('oeTime').value;
+  var venue=document.getElementById('oeVenue').value.trim(),note=document.getElementById('oeNote').value.trim();
+  if(!cat||!gen||!name){alert('[!] Category, Gender, Event required');return;}
+  M.cfg.orderOfEvents.push({id:Date.now(),slNo:M.cfg.orderOfEvents.length+1,category:cat,gender:gen,event:name,time:time,venue:venue,note:note});
+  try{
+    await saveOEField();
+    ['oeEvtCat','oeEvtGen','oeTime','oeVenue','oeNote'].forEach(function(id){document.getElementById(id).value='';});
+    document.getElementById('oeEvtName').innerHTML='<option value="">Event</option>';
+    toast('[OK] Added to programme');renderOE();
+  }catch(e){alert('[X] '+e.message);M.cfg.orderOfEvents.pop();}
+}
+async function delOE(id){
+  if(!confirm('Remove this entry?'))return;
+  M.cfg.orderOfEvents=M.cfg.orderOfEvents.filter(function(e){return e.id!==id;});
+  M.cfg.orderOfEvents.forEach(function(e,i){e.slNo=i+1;});
+  try{await saveOEField();toast('[DEL] Removed');renderOE();}catch(e){alert('[X] '+e.message);}
+}
+async function moveOE(id,dir){
+  var idx=M.cfg.orderOfEvents.findIndex(function(e){return e.id===id;});
+  if(idx<0)return;var ni=idx+dir;
+  if(ni<0||ni>=M.cfg.orderOfEvents.length)return;
+  var tmp=M.cfg.orderOfEvents[idx];M.cfg.orderOfEvents[idx]=M.cfg.orderOfEvents[ni];M.cfg.orderOfEvents[ni]=tmp;
+  M.cfg.orderOfEvents.forEach(function(e,i){e.slNo=i+1;});
+  try{await saveOEField();renderOE();}catch(e){alert('[X] '+e.message);}
+}
+async function clearOE(){
+  if(!confirm('Clear entire programme?'))return;
+  M.cfg.orderOfEvents=[];
+  try{await saveOEField();renderOE();toast('[DEL] Programme cleared');}catch(e){alert('[X] '+e.message);}
+}
+function renderOE(){
+  var con=document.getElementById('oeDisp');if(!con)return;
+  if(!M.cfg.orderOfEvents.length){con.innerHTML='<div class="alert al-w">No events added yet.</div>';return;}
+  con.innerHTML=M.cfg.orderOfEvents.map(function(e){
+    return'<div class="oe-item">'
+      +'<div class="oe-num">'+e.slNo+'</div>'
+      +'<div><div style="font-weight:600;color:var(--txt)">'+e.event+'</div>'+(e.note?'<div style="font-size:.78rem;color:var(--txt2)">'+e.note+'</div>':'')+'</div>'
+      +'<div><span class="bdg bdg-y">'+e.category+'</span> <span class="bdg bdg-b">'+e.gender+'</span></div>'
+      +'<div style="color:var(--txt2);font-size:.85rem">'+(e.venue||'-')+'</div>'
+      +'<div style="color:#34d399;font-weight:700;font-size:.95rem">'+(e.time||'-')+'</div>'
+      +'<div style="display:flex;gap:4px">'
+      +'<button class="bs sm" onclick="moveOE('+e.id+',-1)" style="padding:6px 9px">^</button>'
+      +'<button class="bs sm" onclick="moveOE('+e.id+',1)" style="padding:6px 9px">v</button>'
+      +'</div>'
+      +'<button class="bd sm" onclick="delOE('+e.id+')">[DEL]</button>'
+      +'</div>';
+  }).join('');
+}
+function renderProg(){
+  var con=document.getElementById('progDisp');if(!con)return;
+  if(!M.cfg.orderOfEvents.length){con.innerHTML='<div class="alert al-i">Programme not published yet. Contact district officials.</div>';return;}
+  con.innerHTML='<div class="tbl-wrap"><table><thead><tr><th>#</th><th>Time</th><th>Event</th><th>Category</th><th>Gender</th><th>Venue</th><th>Note</th></tr></thead><tbody>'
+    +M.cfg.orderOfEvents.map(function(e){
+      return'<tr><td><strong style="color:var(--gold)">'+e.slNo+'</strong></td>'
+        +'<td style="color:#34d399;font-weight:600">'+(e.time||'-')+'</td>'
+        +'<td><strong>'+e.event+'</strong></td>'
+        +'<td><span class="bdg bdg-y">'+e.category+'</span></td>'
+        +'<td><span class="bdg bdg-b">'+e.gender+'</span></td>'
+        +'<td style="color:var(--txt2)">'+(e.venue||'-')+'</td>'
+        +'<td style="color:var(--txt2);font-size:.82rem">'+(e.note||'')+'</td>'
+        +'</tr>';
+    }).join('')+'</tbody></table></div>';
+}
+function printOEpdf(){
+  if(!M.cfg.orderOfEvents.length){alert('[X] No events in programme');return;}
+  doPDF('<h2>BVN Kollam Athletic Meet - Order of Events</h2>'
+    +'<p>Date: '+new Date().toLocaleDateString()+' &nbsp;|&nbsp; Total: '+M.cfg.orderOfEvents.length+' events</p>'
+    +'<table><thead><tr><th>#</th><th>Time</th><th>Event</th><th>Category</th><th>Gender</th><th>Venue</th><th>Note</th></tr></thead>'
+    +'<tbody>'+M.cfg.orderOfEvents.map(function(e){
+      return'<tr><td style="font-weight:bold;color:#d4a843">'+e.slNo+'</td>'
+        +'<td style="font-weight:bold;color:#16a34a">'+(e.time||'-')+'</td>'
+        +'<td style="font-weight:bold">'+e.event+'</td>'
+        +'<td>'+e.category+'</td><td>'+e.gender+'</td>'
+        +'<td>'+(e.venue||'-')+'</td><td style="color:#555">'+(e.note||'')+'</td></tr>';
+    }).join('')+'</tbody></table>');
+}
+
+//
+//  BIB
+//
+async function genBIB(){
+  var start=parseInt(document.getElementById('bibStart').value)||1001;
+  var block=parseInt(document.getElementById('bibBlock').value)||100;
+  if(!confirm('Generate BIBs? Start: '+start+', Block: '+block+'/school'))return;
+  var btn=document.getElementById('bibBtn');btn.disabled=true;btn.textContent='... Generating...';
+  try{
+    var ns={},cur=start,batch=DB.batch();
+    M.schools.forEach(function(sch){
+      var rs=M.regs.filter(function(r){return r.school===sch.name;});if(!rs.length)return;
+      var bib=cur;
+      rs.forEach(function(r){batch.update(DB.collection('registrations').doc(String(r.id)),{bib:String(bib++)});});
+      ns[sch.name]={start:cur,end:cur+block-1,assigned:rs.length};cur+=block;
+    });
+    M.cfg.bibSeries=ns;
+    await batch.commit();
+    await cfgUpdate({bibSeries:ns});
+    toast('[OK] BIB numbers generated!');renderBib();
+  }catch(e){alert('[X] '+e.message);}
+  finally{btn.disabled=false;btn.textContent='[NUM] Generate BIB Series';}
+}
+
+async function fullDataReset(){
+  // Step 1: confirmation
+  var conf1=confirm(
+    '⚠️ FULL DATA RESET\n\n'
+    +'ഇനിപ്പറയുന്ന എല്ലാ data-ഉം DELETE ആകും:\n'
+    +'• എല്ലാ Student Registrations\n'
+    +'• എല്ലാ Results\n'
+    +'• BIB Numbers\n\n'
+    +'Schools, Events, Programme — DELETE ആകില്ല.\n\n'
+    +'തുടരണോ?'
+  );
+  if(!conf1)return;
+  var conf2=confirm('⚠️ FINAL WARNING\n\nഈ action UNDO ചെയ്യാൻ സാധിക്കില്ല.\n\n"OK" click ചെയ്‌താൽ data permanent ആയി delete ആകും.');
+  if(!conf2)return;
+
+  try{
+    toast('🔄 Deleting... please wait');
+
+    // Delete all registrations
+    var regBatch=DB.batch();
+    M.regs.forEach(function(r){
+      regBatch.delete(DB.collection('registrations').doc(String(r.id)));
+    });
+    if(M.regs.length)await regBatch.commit();
+
+    // Delete all results
+    var resBatch=DB.batch();
+    M.results.forEach(function(r){
+      resBatch.delete(DB.collection('results').doc(String(r.id)));
+    });
+    if(M.results.length)await resBatch.commit();
+
+    // Clear BIB series from config
+    M.cfg.bibSeries={};
+    await cfgUpdate({bibSeries:{}});
+
+    toast('[OK] Full Reset complete! All registrations & results deleted.');
+  }catch(e){
+    alert('[X] Reset failed: '+e.message);
+  }
+}
+
+async function resetAllBIB(){
+  var bibCount=M.regs.filter(function(r){return r.bib;}).length;
+  if(!bibCount){alert('[!] BIB assign ചെയ്തിട്ടില്ല, reset ചെയ്യാൻ ഒന്നുമില്ല.');return;}
+  if(!confirm('⚠️ ജാഗ്രത!\n\n'+bibCount+' students-ന്റെ BIB numbers delete ചെയ്യും.\nBIB series-ഉം clear ആകും.\n\nഈ action undo ചെയ്യാൻ പറ്റില്ല. തുടരണോ?'))return;
+  try{
+    var batch=DB.batch();
+    M.regs.filter(function(r){return r.bib;}).forEach(function(r){
+      batch.update(DB.collection('registrations').doc(String(r.id)),{bib:''});
+    });
+    await batch.commit();
+    var emptyBibSeries={};
+    M.cfg.bibSeries=emptyBibSeries;
+    await cfgUpdate({bibSeries:emptyBibSeries});
+    toast('[OK] All BIB numbers reset!');
+    renderBib();
+  }catch(e){alert('[X] Reset failed: '+e.message);}
+}
+function renderBib(){
+  var el=function(id){return document.getElementById(id);};
+  el('totStu').textContent=M.regs.length;
+  el('totBib').textContent=M.regs.filter(function(r){return r.bib;}).length;
+  var sd=el('bibSeriesDisp');sd.innerHTML='';
+  M.schools.forEach(function(s){
+    var ser=M.cfg.bibSeries[s.name];if(!ser)return;
+    sd.innerHTML+='<div class="bib-row"><div><strong style="color:var(--gold)">'+s.name+'</strong><br>'
+      +'<small style="color:var(--txt2)">BIB: <strong>'+ser.start+'</strong> -> <strong>'+ser.end+'</strong></small></div>'
+      +'<span class="bdg bdg-g">'+ser.assigned+' assigned</span></div>';
+  });
+  var ld=el('bibListDisp');ld.innerHTML='';
+  M.schools.forEach(function(sch){
+    var rs=M.regs.filter(function(r){return r.school===sch.name;});if(!rs.length)return;
+    var ser=M.cfg.bibSeries[sch.name];
+    var div=document.createElement('div');div.className='ri';
+    div.innerHTML='<div><div class="ri-title">'+sch.name+'</div>'
+      +'<div class="ri-sub">Students: '+rs.length+(ser?' &nbsp;|&nbsp; BIB: '+ser.start+'-'+ser.end:'')+'</div></div>'
+      +'<button class="bp sm" onclick="printBibList(\''+sch.name+'\')">[PDF] PDF</button>';
+    ld.appendChild(div);
+  });
+}
+function printBibList(name){
+  var rs=M.regs.filter(function(r){return r.school===name;}).sort(function(a,b){return Number(a.bib||0)-Number(b.bib||0);});
+  if(!rs.length){alert('[X] No registrations');return;}
+  var ser=M.cfg.bibSeries[name];
+  doPDF('<h2>BVN Kollam Athletic Meet - BIB List</h2>'
+    +'<p><strong>School:</strong> '+name+(ser?' &nbsp;|&nbsp; <strong>Series:</strong> '+ser.start+'-'+ser.end:'')+'</p>'
+    +'<p><strong>Date:</strong> '+new Date().toLocaleDateString()+'</p>'
+    +'<table><thead><tr><th>BIB</th><th>Reg No</th><th>Name</th><th>Class</th><th>Cat</th><th>Gender</th><th>Events</th></tr></thead>'
+    +'<tbody>'+rs.map(function(r){
+      return'<tr><td style="font-weight:bold;color:#d4a843;font-size:1.2em">'+(r.bib||'-')+'</td>'
+        +'<td>'+r.regNo+'</td><td>'+r.name+'</td><td>'+r.class+'</td>'
+        +'<td>'+r.category+'</td><td>'+r.gender+'</td><td>'+r.events.join(', ')+'</td></tr>';
+    }).join('')+'</tbody></table>');
+}
+
+//
+//  EVENTS  <- ROOT CAUSE FIX: atomic arrayUnion/arrayRemove
+//  Problem was: saveConfig() replaced ENTIRE config doc; Firestore snapshot
+//  then overwrote M.cfg.events with stale server data before renderEvts ran.
+//  Fix: use field-level atomic updates so only the events array changes.
+//
+async function addEvt(){
+  var cat=document.getElementById('newEvtCat').value,gen=document.getElementById('newEvtGen').value;
+  var name=document.getElementById('newEvtName').value.trim();
+  if(!cat||!gen||!name){alert('[!] Fill all fields');return;}
+  var gens=gen==='Both'?['Boys','Girls']:[gen];
+
+  // 1. Update local state immediately so render is instant
+  gens.forEach(function(g){
+    if(!M.cfg.events[cat])M.cfg.events[cat]={Boys:[],Girls:[]};
+    if(!M.cfg.events[cat][g])M.cfg.events[cat][g]=[];
+    if(M.cfg.events[cat][g].indexOf(name)<0)M.cfg.events[cat][g].push(name);
+  });
+
+  // 2. Render immediately from local state (no Firestore round-trip needed)
+  renderEvts();
+  fillSelects();
+
+  M._evtWriting=true;
+  try{
+    await cfgUpdate({events:M.cfg.events});
+    document.getElementById('newEvtName').value='';
+    toast('[OK] "'+name+'" added');
+  }
+  catch(e){
+    gens.forEach(function(g){
+      if(M.cfg.events[cat]&&M.cfg.events[cat][g])
+        M.cfg.events[cat][g]=M.cfg.events[cat][g].filter(function(x){return x!==name;});
+    });
+    renderEvts();
+    alert('[X] '+e.message);
+  }finally{M._evtWriting=false;}
+}
+async function delEvt(cat,gen,name){
+  if(!confirm('Remove "'+name+'" from '+cat+' '+gen+'?'))return;
+
+  // 1. Update local state immediately
+  var prev=(M.cfg.events[cat]||{})[gen]||[];
+  if(M.cfg.events[cat]&&M.cfg.events[cat][gen])
+    M.cfg.events[cat][gen]=M.cfg.events[cat][gen].filter(function(e){return e!==name;});
+
+  // 2. Render immediately
+  renderEvts();
+  fillSelects();
+
+  M._evtWriting=true;
+  try{
+    await cfgUpdate({events:M.cfg.events});
+    toast('[DEL] Event removed');
+  }catch(e){
+    if(M.cfg.events[cat])M.cfg.events[cat][gen]=prev;
+    renderEvts();
+    alert('[X] '+e.message);
+  }finally{M._evtWriting=false;}
+}
+function delEvtBtn(btn){
+  var cat=btn.getAttribute('data-cat');
+  var gen=btn.getAttribute('data-gen');
+  var name=btn.getAttribute('data-evtname');
+  delEvt(cat,gen,name);
+}
+function renderEvts(){
+  var con=document.getElementById('evtDisp');if(!con)return;
+  var isDist=USER&&USER.type==='district';
+  var html='';
+  if(isDist){
+    html+='<div class="alert al-i" style="margin-bottom:16px">[DEL] District Admin: ??? event-?? ???? <strong>Delete</strong> ????? ???????? ?????? remove ???????.</div>';
+  }
+  M.cfg.categories.forEach(function(cat){
+    html+='<div style="background:rgba(6,16,30,.6);border:1px solid var(--bdr);padding:18px;border-radius:14px;margin-bottom:14px">';
+    html+='<h3 style="font-family:Cormorant Garant,serif;color:var(--gold);margin-bottom:14px;font-size:1.1rem">'+cat+'</h3>';
+    html+='<div class="g2">';
+    ['Boys','Girls'].forEach(function(g){
+      var evts=(M.cfg.events[cat]||{})[g]||[];
+      html+='<div>';
+      html+='<div style="font-size:.78rem;font-weight:700;color:'+(g==='Boys'?'#5b9ef5':'#2dd4bf')+';text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">'+g+'</div>';
+      html+='<div style="display:flex;flex-wrap:wrap;gap:6px">';
+      evts.forEach(function(e){
+        var relay=isRelay(e);
+        var bgC=relay?'rgba(249,198,66,.1)':'rgba(91,158,245,.1)';
+        var fgC=relay?'var(--gold)':'#93c5fd';
+        var bdC=relay?'rgba(249,198,66,.25)':'rgba(91,158,245,.25)';
+        html+='<span style="display:inline-flex;align-items:center;gap:6px;background:'+bgC+';color:'+fgC+';padding:6px 13px;border-radius:99px;font-size:.82rem;font-weight:500;border:1px solid '+bdC+'">';
+        html+=e;
+        if(relay)html+='<span class="bdg bdg-y" style="font-size:.65rem;padding:2px 6px">RELAY</span>';
+        if(isDist)html+='<button class="evt-del-btn" data-cat="'+cat+'" data-gen="'+g+'" data-evtname="'+e+'" onclick="delEvtBtn(this)">[DEL] Delete</button>';
+        html+='</span>';
+      });
+      if(!evts.length)html+='<span style="color:var(--txt2);font-size:.82rem;font-style:italic">No events added</span>';
+      html+='</div></div>';
+    });
+    html+='</div></div>';
+  });
+  con.innerHTML=html;
+}
+
+//
+//  SCHOOLS
+//
+async function addSchool(){
+  var name=document.getElementById('nSName').value.trim(),prin=document.getElementById('nSPrin').value.trim();
+  var cont=document.getElementById('nSCont').value.trim(),pass=document.getElementById('nSPass').value;
+  if(!name||!prin||!cont||!pass){alert('[!] Fill all fields');return;}
+  if(M.schools.find(function(s){return s.name.toLowerCase()===name.toLowerCase();})){alert('[X] School already exists');return;}
+  var id=Date.now();
+  try{
+    var upd={};upd['schoolPasswords.'+name]=pass;
+    M.cfg.schoolPasswords[name]=pass;
+    var batch=DB.batch();
+    batch.set(DB.collection('schools').doc(String(id)),{id:id,name:name,principal:prin,contact:cont});
+    await batch.commit();
+    await cfgUpdate(upd);
+    ['nSName','nSPrin','nSCont','nSPass'].forEach(function(i){document.getElementById(i).value='';});
+    toast('[OK] '+name+' added!');
+  }catch(e){alert('[X] '+e.message);}
+}
+function renderSchools(){
+  var con=document.getElementById('schDisp');
+  if(!M.schools.length){con.innerHTML='<div class="alert al-w">No schools registered</div>';return;}
+  con.innerHTML='<div class="tbl-wrap"><table><thead><tr><th>#</th><th>School</th><th>Principal</th><th>Contact</th><th>Students</th><th>Registration</th><th>Actions</th></tr></thead>'
+    +'<tbody>'+M.schools.map(function(s,i){
+      var regOn=s.regEnabled!==false;
+      return'<tr><td>'+(i+1)+'</td><td><strong>'+s.name+'</strong></td>'
+        +'<td>'+s.principal+'</td><td>'+s.contact+'</td>'
+        +'<td><span class="bdg bdg-y">'+M.regs.filter(function(r){return r.school===s.name;}).length+'</span></td>'
+        +'<td>'
+        +'<button class="'+(regOn?'bg':'bd')+' sm" onclick="toggleReg(\''+s.id+'\','+regOn+')" style="min-width:80px;justify-content:center">'
+        +(regOn?'[ON] ON':'[OFF] OFF')
+        +'</button>'
+        +'</td>'
+        +'<td style="display:flex;gap:6px;flex-wrap:wrap">'
+        +'<button class="bp sm" onclick="openEditSchool(\''+s.id+'\')">✏️ Edit</button>'
+        +'<button class="bw sm" onclick="openPassModal(\''+s.name+'\')">[KEY]</button>'
+        +'<button class="bd sm" onclick="delSchool('+s.id+')">[DEL]</button>'
+        +'</td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+function openEditSchool(schoolId){
+  var sch=M.schools.find(function(s){return String(s.id)===String(schoolId);});
+  if(!sch)return;
+  var safeName=sch.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  document.getElementById('editForm').innerHTML=
+    '<p style="color:var(--txt2);margin-bottom:16px">Editing: <strong style="color:var(--gold)">'+sch.name+'</strong></p>'
+    +'<div class="form-group" style="margin-bottom:12px"><label class="form-label">School Name</label>'
+    +'<input type="text" id="eSchName" value="'+sch.name.replace(/"/g,'&quot;')+'"></div>'
+    +'<div class="form-group" style="margin-bottom:12px"><label class="form-label">Principal</label>'
+    +'<input type="text" id="eSchPrin" value="'+(sch.principal||'').replace(/"/g,'&quot;')+'"></div>'
+    +'<div class="form-group" style="margin-bottom:16px"><label class="form-label">Contact</label>'
+    +'<input type="text" id="eSchCont" value="'+(sch.contact||'').replace(/"/g,'&quot;')+'"></div>'
+    +'<button class="bg w100" onclick="saveSchoolEdit(\''+schoolId+'\',\''+safeName+'\')">[OK] Save Changes</button>';
+  document.getElementById('editModalTitle').textContent='✏️ Edit School';
+  document.getElementById('editModal').classList.add('on');
+}
+async function saveSchoolEdit(schoolId,oldName){
+  var newName=document.getElementById('eSchName').value.trim();
+  var newPrin=document.getElementById('eSchPrin').value.trim();
+  var newCont=document.getElementById('eSchCont').value.trim();
+  if(!newName||!newPrin||!newCont){alert('[!] Fill all fields');return;}
+  var dup=M.schools.find(function(s){return s.name.toLowerCase()===newName.toLowerCase()&&String(s.id)!==String(schoolId);});
+  if(dup){alert('[X] Another school with this name already exists');return;}
+  try{
+    await DB.collection('schools').doc(String(schoolId)).update({name:newName,principal:newPrin,contact:newCont});
+    if(newName!==oldName){
+      var oldPass=M.cfg.schoolPasswords[oldName]||'1234';
+      M.cfg.schoolPasswords[newName]=oldPass;
+      delete M.cfg.schoolPasswords[oldName];
+      await cfgUpdate({schoolPasswords:M.cfg.schoolPasswords});
+    }
+    closeM('editModal');
+    toast('[OK] School updated: '+newName);
+  }catch(e){alert('[X] '+e.message);}
+}
+async function toggleReg(schoolId,currentlyOn){
+  var sch=M.schools.find(function(s){return String(s.id)===String(schoolId);});
+  if(!sch)return;
+  var newState=!currentlyOn;
+  if(!confirm((newState?'Enable':'Disable')+' registration for:\n"'+sch.name+'"?'))return;
+  try{
+    await DB.collection('schools').doc(String(schoolId)).update({regEnabled:newState});
+    toast((newState?'[ON] Registration ON':'[OFF] Registration OFF')+' - '+sch.name);
+  }catch(e){alert('[X] '+e.message);}
+}
+async function toggleAllReg(enable){
+  if(!confirm((enable?'Enable':'Disable')+' registration for ALL schools?'))return;
+  var batch=DB.batch();
+  M.schools.forEach(function(s){
+    batch.update(DB.collection('schools').doc(String(s.id)),{regEnabled:enable});
+  });
+  try{
+    await batch.commit();
+    toast(enable?'[ON] All registrations ENABLED':'[OFF] All registrations DISABLED');
+  }catch(e){alert('[X] '+e.message);}
+}
+function openPassModal(name){
+  document.getElementById('passForm').innerHTML=
+    '<p style="color:var(--txt2);margin-bottom:14px">School: <strong style="color:var(--gold)">'+name+'</strong></p>'
+    +'<div class="form-group"><label class="form-label">New Password</label><input type="password" id="sp1" placeholder="New password"></div>'
+    +'<div class="form-group"><label class="form-label">Confirm Password</label><input type="password" id="sp2" placeholder="Confirm password"></div>'
+    +'<button class="bg w100" onclick="saveSchPass(\''+name+'\')">[OK] Update Password</button>';
+  document.getElementById('passModal').classList.add('on');
+}
+async function saveSchPass(name){
+  var p1=document.getElementById('sp1').value,p2=document.getElementById('sp2').value;
+  if(!p1){alert('[!] Enter a password');return;}if(p1!==p2){alert('[X] Passwords do not match');return;}
+  M.cfg.schoolPasswords[name]=p1;
+  try{
+    // Full object update — dot notation not reliable in REST API
+    await cfgUpdate({schoolPasswords:M.cfg.schoolPasswords});
+    closeM('passModal');toast('[OK] Password updated for '+name);
+  }catch(e){alert('[X] '+e.message);}
+}
+async function chgSysPass(type){
+  var id=type==='district'?'dPass':'oPass',p=document.getElementById(id).value;
+  if(!p||p.length<4){alert('[!] Minimum 4 characters');return;}
+  M.cfg.passwords[type]=p;
+  try{var upd={};upd['passwords.'+type]=p;await cfgUpdate(upd);document.getElementById(id).value='';toast('[OK] '+type+' password updated');}catch(e){alert('[X] '+e.message);}
+}
+async function delSchool(id){
+  var sch=M.schools.find(function(s){return s.id===id;});if(!sch)return;
+  if(M.regs.some(function(r){return r.school===sch.name;})){alert('[X] Cannot delete: school has registered students');return;}
+  if(!confirm('Delete "'+sch.name+'"?'))return;
+  try{
+    // Remove from local state first
+    delete M.cfg.schoolPasswords[sch.name];
+    // Delete school document
+    await DB.collection('schools').doc(String(id)).delete();
+    // Write full schoolPasswords object (REST API doesn't support FieldValue.delete)
+    await cfgUpdate({schoolPasswords:M.cfg.schoolPasswords});
+    toast('[DEL] '+sch.name+' deleted');
+  }catch(e){
+    // Rollback local state
+    M.cfg.schoolPasswords[sch.name]=M.cfg.schoolPasswords[sch.name]||'1234';
+    alert('[X] '+e.message);
+  }
+}
+
+//
+//  REPORTS / PDF
+//
+function doPDF(html){
+  var li=window._BVN?'<img src="'+window._BVN+'" style="width:50px;height:62px;object-fit:contain"><br>':'';
+  var hdr='<div style="text-align:center;border-bottom:2px solid #d4a843;padding-bottom:10px;margin-bottom:14px">'+li
+    +'<strong style="font-size:1.2rem;color:#d4a843">BVN Kollam Athletic Meet</strong><br>'
+    +'<span style="font-size:.78rem;color:#777">Kollam District Championship | Vidya Bharati Kerala</span></div>';
+  var w=window.open('','','width=980,height=740');
+  w.document.write('<html><head><style>'
+    +'body{font-family:Arial,sans-serif;margin:28px;color:#111}'
+    +'h2{text-align:center;color:#d4a843;margin-bottom:6px;font-size:1.3rem}'
+    +'h3{color:#1e40af;margin:18px 0 8px;border-top:1px solid #eee;padding-top:10px;font-size:.95rem}'
+    +'p{margin:4px 0;color:#555;font-size:.85rem;text-align:center}'
+    +'table{width:100%;border-collapse:collapse;margin-top:10px}'
+    +'th{background:#d4a843;color:#000;padding:8px 10px;text-align:left;font-weight:bold;font-size:.78rem}'
+    +'td{padding:7px 10px;border-bottom:1px solid #e5e7eb;font-size:.8rem}'
+    +'tr:nth-child(even) td{background:#f9fafb}'
+    +'footer{margin-top:18px;color:#aaa;font-size:.7rem;text-align:center;border-top:1px solid #eee;padding-top:8px}'
+    +'@media print{button{display:none}}</style></head><body>'
+    +hdr+html
+    +'<footer>Generated: '+new Date().toLocaleString()+' | BVN Kollam Athletic Meet | Vidya Bharati Kerala</footer>'
+    +'<script>window.onload=function(){window.print();}<\/script></body></html>');
+  w.document.close();
+}
+function dlCSV(csv,fname){
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'}));
+  a.setAttribute('download',fname);document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+function rSchool(fmt){
+  var rows=M.schools.map(function(s){
+    var r=M.regs.filter(function(x){return x.school===s.name;});
+    var catPts={};M.cfg.categories.forEach(function(c){catPts[c]=0;});
+    var pts=M.results.reduce(function(sum,res){
+      var reg=M.regs.find(function(x){return x.id===res.regId;});
+      if(reg&&reg.school===s.name){catPts[res.category]=(catPts[res.category]||0)+res.points;return sum+res.points;}return sum;
+    },0);
+    return{name:s.name,prin:s.principal,cont:s.contact,cnt:r.length,bib:r.filter(function(x){return x.bib;}).length,pts:pts,catPts:catPts};
+  });
+  if(fmt==='pdf'){
+    doPDF('<h2>School-Wise Report</h2><p>Date: '+new Date().toLocaleDateString()+'</p>'
+      +'<table><thead><tr><th>School</th><th>Principal</th><th>Students</th><th>BIB</th>'
+      +M.cfg.categories.map(function(c){return'<th>'+c+'</th>';}).join('')
+      +'<th>Total</th></tr></thead><tbody>'
+      +rows.map(function(r){return'<tr><td>'+r.name+'</td><td>'+r.prin+'</td><td>'+r.cnt+'</td><td>'+r.bib+'</td>'
+        +M.cfg.categories.map(function(c){return'<td>'+r.catPts[c]+'</td>';}).join('')
+        +'<td style="font-weight:bold;color:#d4a843">'+r.pts+'</td></tr>';}).join('')+'</tbody></table>');
+  }else{
+    dlCSV('School,Principal,Contact,Students,BIB,'+M.cfg.categories.join(',')+',Total\n'
+      +rows.map(function(r){return'"'+r.name+'","'+r.prin+'","'+r.cont+'",'+r.cnt+','+r.bib+','+M.cfg.categories.map(function(c){return r.catPts[c];}).join(',')+','+r.pts;}).join('\n'),'school-report.csv');
+  }
+}
+function rCat(fmt){
+  var rows=M.cfg.categories.map(function(cat){
+    var r=M.regs.filter(function(x){return x.category===cat;});
+    return{cat:cat,total:r.length,boys:r.filter(function(x){return x.gender==='Boys';}).length,
+      girls:r.filter(function(x){return x.gender==='Girls';}).length,
+      res:M.results.filter(function(x){return x.category===cat;}).length};
+  });
+  if(fmt==='pdf'){
+    doPDF('<h2>Category Report</h2><p>'+new Date().toLocaleDateString()+'</p>'
+      +'<table><thead><tr><th>Category</th><th>Total</th><th>Boys</th><th>Girls</th><th>Results</th></tr></thead>'
+      +'<tbody>'+rows.map(function(r){return'<tr><td>'+r.cat+'</td><td>'+r.total+'</td><td>'+r.boys+'</td><td>'+r.girls+'</td><td>'+r.res+'</td></tr>';}).join('')+'</tbody></table>');
+  }else{dlCSV('Category,Total,Boys,Girls,Results\n'+rows.map(function(r){return r.cat+','+r.total+','+r.boys+','+r.girls+','+r.res;}).join('\n'),'category-report.csv');}
+}
+// ── STATE QUALIFIED REPORT ──────────────────────────────────────
+function rStateQual(fmt){
+  var catFilter=document.getElementById('sqCat').value;
+
+  // Only 1st place qualifies for state
+  var qualified=M.results.filter(function(r){return r.position===1;});
+  if(catFilter!=='all')qualified=qualified.filter(function(r){return r.category===catFilter;});
+
+  // Build enriched rows with registration details
+  var rows=qualified.map(function(r){
+    var reg=M.regs.find(function(x){return x.id===r.regId;});
+    if(!reg)return null;
+    return{
+      category:r.category,
+      event:r.event,
+      gender:r.gender,
+      position:r.position,
+      name:reg.name,
+      dob:reg.dob||'',
+      cls:reg.class||'',
+      school:reg.school
+    };
+  }).filter(Boolean);
+
+  // Sort: category order → event A-Z → gender → position
+  var catOrder=M.cfg.categories;
+  rows.sort(function(a,b){
+    var ca=catOrder.indexOf(a.category),cb=catOrder.indexOf(b.category);
+    if(ca!==cb)return ca-cb;
+    if(a.event!==b.event)return a.event.localeCompare(b.event);
+    if(a.gender!==b.gender)return a.gender.localeCompare(b.gender);
+    return a.position-b.position;
+  });
+
+  // Update count badge
+  var cnt=document.getElementById('sqCount');
+  if(cnt)cnt.textContent=rows.length+' athletes';
+
+  if(!rows.length){alert('[X] State Qualified: No results found'+(catFilter!=='all'?' for category '+catFilter:''));return;}
+
+  var posLabel=function(p){return p===1?'1st (🥇)':p===2?'2nd (🥈)':'3rd (🥉)';};
+  var posLabelPlain=function(p){return p===1?'1st':p===2?'2nd':'3rd';};
+  var catLabel=catFilter==='all'?'All Categories':catFilter;
+
+  if(fmt==='pdf'){
+    // Group by category for PDF section headings
+    var sections={};
+    rows.forEach(function(r){
+      if(!sections[r.category])sections[r.category]=[];
+      sections[r.category].push(r);
+    });
+    var tableHtml='';
+    Object.keys(sections).sort(function(a,b){return catOrder.indexOf(a)-catOrder.indexOf(b);}).forEach(function(cat){
+      tableHtml+='<h3 style="color:#1e40af;border-top:2px solid #d4a843;padding-top:10px;margin:18px 0 8px">'+cat+'</h3>';
+      tableHtml+='<table><thead><tr>'
+        +'<th>Event</th><th>Boy/Girl</th><th>Position</th><th>Name</th>'
+        +'<th>Date of Birth</th><th>Class</th><th>School</th>'
+        +'</tr></thead><tbody>';
+      sections[cat].forEach(function(r){
+        tableHtml+='<tr>'
+          +'<td><strong>'+r.event+'</strong></td>'
+          +'<td style="color:'+(r.gender==='Boys'?'#1d4ed8':'#be185d')+'">'+r.gender+'</td>'
+          +'<td style="font-weight:bold">'+posLabel(r.position)+'</td>'
+          +'<td><strong>'+r.name+'</strong></td>'
+          +'<td>'+(r.dob||'-')+'</td>'
+          +'<td>'+r.cls+'</td>'
+          +'<td>'+r.school+'</td>'
+          +'</tr>';
+      });
+      tableHtml+='</tbody></table>';
+    });
+    doPDF(
+      '<h2>State Qualified Athletes</h2>'
+      +'<p>Category: <strong>'+catLabel+'</strong> &nbsp;|&nbsp; Total Athletes: <strong>'+rows.length+'</strong> &nbsp;|&nbsp; Date: '+new Date().toLocaleDateString()+'</p>'
+      +'<p style="color:#d4a843;font-size:.8rem">ഓരോ event-ലും 1st Place നേടുന്ന athletes State Meet-ന് qualify ചെയ്യുന്നു</p>'
+      +tableHtml
+    );
+  }else{
+    // Excel-compatible CSV (UTF-8 BOM included for Malayalam school names)
+    var csvRows=['Category,Event,Boy/Girl,Position,Name,Date of Birth,Class,School'];
+    rows.forEach(function(r){
+      csvRows.push(
+        '"'+r.category+'"'
+        +',"'+r.event+'"'
+        +',"'+r.gender+'"'
+        +','+posLabelPlain(r.position)
+        +',"'+r.name+'"'
+        +',"'+(r.dob||'')+'"'
+        +',"'+r.cls+'"'
+        +',"'+r.school+'"'
+      );
+    });
+    dlCSV(csvRows.join('\n'),'state-qualified-'+(catFilter==='all'?'all':catFilter)+'.csv');
+  }
+}
+
+function rEvt(fmt,mode){
+  if(mode==='combined'){
+    var combined={};
+    M.regs.forEach(function(reg){reg.events.forEach(function(evt){if(!combined[evt])combined[evt]=[];combined[evt].push(reg);});});
+    var evtKeys=Object.keys(combined).sort();
+    if(fmt==='pdf'){
+      var html='<h2>Event Participant List - Combined</h2><p>'+new Date().toLocaleDateString()+'</p>';
+      evtKeys.forEach(function(evt){
+        var pList=combined[evt];var eRes=M.results.filter(function(r){return r.event===evt;});
+        html+='<h3>'+evt+' ('+pList.length+' participants)</h3>'
+          +'<table><thead><tr><th>BIB</th><th>Reg</th><th>Name</th><th>Class</th><th>Cat</th><th>Gender</th><th>School</th><th>Result</th></tr></thead>'
+          +'<tbody>'+pList.sort(function(a,b){return Number(a.bib||0)-Number(b.bib||0);}).map(function(p){
+            var res=eRes.find(function(r){return r.regId===p.id;});
+            var pos=res?(res.position===1?'1st 1st':res.position===2?'2nd 2nd':'3rd 3rd'):'-';
+            return'<tr><td style="font-weight:bold;color:#d4a843">'+(p.bib||'-')+'</td>'
+              +'<td>'+p.regNo+'</td><td>'+p.name+'</td><td>'+p.class+'</td>'
+              +'<td>'+p.category+'</td><td>'+p.gender+'</td><td>'+p.school+'</td><td>'+pos+'</td></tr>';
+          }).join('')+'</tbody></table>';
+      });doPDF(html);
+    }else{
+      var csv='Event,BIB,Reg No,Name,Class,Category,Gender,School,DOB,Position,Points\n';
+      evtKeys.forEach(function(evt){
+        var pList=combined[evt];var eRes=M.results.filter(function(r){return r.event===evt;});
+        pList.sort(function(a,b){return Number(a.bib||0)-Number(b.bib||0);}).forEach(function(p){
+          var res=eRes.find(function(r){return r.regId===p.id;});
+          csv+='"'+evt+'","'+(p.bib||'-')+'","'+p.regNo+'","'+p.name+'","'+p.class+'","'+p.category+'","'+p.gender+'","'+p.school+'","'+p.dob+'",'+(res?res.position:'-')+','+(res?res.points:0)+'\n';
+        });
+      });dlCSV(csv,'event-combined.csv');
+    }
+  }else{
+    var map={};
+    M.regs.forEach(function(reg){reg.events.forEach(function(evt){var k=reg.category+'|'+reg.gender+'|'+evt;if(!map[k])map[k]={category:reg.category,gender:reg.gender,event:evt,participants:[]};map[k].participants.push(reg);});});
+    var keys=Object.keys(map).sort();
+    if(fmt==='pdf'){
+      var html='<h2>Event-wise Report - By Category</h2><p>'+new Date().toLocaleDateString()+'</p>';
+      keys.forEach(function(k){var o=map[k];var eRes=M.results.filter(function(r){return r.event===o.event&&r.category===o.category&&r.gender===o.gender;});
+        html+='<h3>'+o.event+' - '+o.category+' '+o.gender+'</h3>'
+          +'<table><thead><tr><th>BIB</th><th>Reg</th><th>Name</th><th>Class</th><th>School</th><th>Result</th></tr></thead>'
+          +'<tbody>'+o.participants.map(function(p){var res=eRes.find(function(r){return r.regId===p.id;});var pos=res?(res.position===1?'1st 1st':res.position===2?'2nd 2nd':'3rd 3rd'):'-';
+            return'<tr><td style="font-weight:bold;color:#d4a843">'+(p.bib||'-')+'</td><td>'+p.regNo+'</td><td>'+p.name+'</td><td>'+p.class+'</td><td>'+p.school+'</td><td>'+pos+'</td></tr>';}).join('')+'</tbody></table>';
+      });doPDF(html);
+    }else{
+      var csv='Event,Category,Gender,BIB,Reg No,Name,Class,School,DOB,Position,Points\n';
+      keys.forEach(function(k){var o=map[k];var eRes=M.results.filter(function(r){return r.event===o.event&&r.category===o.category&&r.gender===o.gender;});
+        o.participants.forEach(function(p){var res=eRes.find(function(r){return r.regId===p.id;});
+          csv+='"'+o.event+'","'+o.category+'","'+o.gender+'","'+(p.bib||'-')+'","'+p.regNo+'","'+p.name+'","'+p.class+'","'+p.school+'","'+p.dob+'",'+(res?res.position:'-')+','+(res?res.points:0)+'\n';});
+      });dlCSV(csv,'event-by-category.csv');
+    }
+  }
+}
+function rScore(fmt){
+  var cats=M.cfg.categories;
+  var sp={};
+  M.schools.forEach(function(s){sp[s.name]={total:0,gold:0,silver:0,bronze:0};cats.forEach(function(c){sp[s.name][c]=0;});});
+  M.results.forEach(function(r){var reg=M.regs.find(function(x){return x.id===r.regId;});if(!reg)return;
+    if(!sp[reg.school]){sp[reg.school]={total:0,gold:0,silver:0,bronze:0};cats.forEach(function(c){sp[reg.school][c]=0;});}
+    sp[reg.school].total+=r.points;sp[reg.school][r.category]=(sp[reg.school][r.category]||0)+r.points;
+    if(r.position===1)sp[reg.school].gold++;if(r.position===2)sp[reg.school].silver++;if(r.position===3)sp[reg.school].bronze++;
+  });
+  var sorted=Object.entries(sp).sort(function(a,b){return b[1].total-a[1].total;});
+  if(fmt==='pdf'){
+    doPDF('<h2>Points Scoreboard - Category Breakdown</h2><p>'+new Date().toLocaleDateString()+'</p>'
+      +'<table><thead><tr><th>Rank</th><th>School</th>'+cats.map(function(c){return'<th>'+c+'</th>';}).join('')
+      +'<th>1st</th><th>2nd</th><th>3rd</th><th>Total</th></tr></thead>'
+      +'<tbody>'+sorted.map(function(x,i){var s=x[0],p=x[1];
+        return'<tr '+(i===0?'style="background:#fffbea"':'')+'><td>'+(i===0?'Top':i+1)+'</td><td>'+s+'</td>'
+          +cats.map(function(c){return'<td>'+p[c]+'</td>';}).join('')
+          +'<td>'+p.gold+'</td><td>'+p.silver+'</td><td>'+p.bronze+'</td>'
+          +'<td style="font-weight:bold;color:#d4a843">'+p.total+'</td></tr>';}).join('')+'</tbody></table>');
+  }else{
+    dlCSV('Rank,School,'+cats.join(',')+',Gold,Silver,Bronze,Total\n'
+      +sorted.map(function(x,i){return(i+1)+',"'+x[0]+'",'+cats.map(function(c){return x[1][c];}).join(',')+','+x[1].gold+','+x[1].silver+','+x[1].bronze+','+x[1].total;}).join('\n'),'scoreboard.csv');
+  }
+}
+</script>
+<script>
+(function(){
+  var p=["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"];
+  var s='data:image/png;base64,'+p.join('');
+  window._BVN=s;
+  function apply(){
+    var n=document.getElementById('bvnNavLogo');
+    var m=document.getElementById('bvnMedal');
+    var h=document.getElementById('bvnHeroLogo');
+    if(n){n.src=s;n.style.display='block';}
+    if(m)m.style.display='none';
+    if(h){h.src=s;h.style.display='block';}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);
+  else apply();
+})();
+</script>
+</body>
+</html>
