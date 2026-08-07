@@ -1035,7 +1035,7 @@ async function signInAnon(){
       method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({returnSecureToken:true})
     });
-    if(!r.ok)throw new Error("auth "+r.status);
+    if(!r.ok){var et=await r.text();throw new Error("auth "+r.status+": "+et);}
     var d=await r.json();
     AUTH_TOKEN=d.idToken;
     try{localStorage.setItem(LS_RT,d.refreshToken);localStorage.setItem(LS_UID,d.localId);}catch(e){}
@@ -1043,7 +1043,11 @@ async function signInAnon(){
     var refreshMs=(parseInt(d.expiresIn||"3600")-300)*1000;
     var rt=d.refreshToken;
     setTimeout(function(){refreshAnon(rt);},Math.max(30000,refreshMs));
-  }catch(e){console.warn("Anon auth unavailable, falling back to unauthenticated calls:",e);}
+    window.__AUTH_STATUS="ok";
+  }catch(e){
+    window.__AUTH_STATUS="FAILED: "+e.message;
+    console.error("Anon auth unavailable, falling back to unauthenticated calls:",e);
+  }
 }
 async function refreshAnon(refreshToken){
   try{
@@ -1116,7 +1120,7 @@ function mkRef(col,id){
     get:async function(){
       var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY,{headers:authHeaders()});
       if(r.status===404)return{exists:false,data:function(){return null;}};
-      if(!r.ok)throw new Error("GET "+r.status);
+      if(!r.ok){var et=await r.text();throw new Error("GET "+r.status+" (auth:"+(window.__AUTH_STATUS||"pending")+") body:"+et.slice(0,300));}
       var d=await r.json();var o=d2o(d);
       return{exists:true,data:function(){return o;}};
     },
@@ -1153,7 +1157,7 @@ function mkCol(col){
     doc:function(id){return mkRef(col,id);},
     get:async function(){
       var all=[];var url=FB_URL+"/"+col+"?key="+FB_KEY+"&pageSize=500";
-      var r=await fetch(url,{headers:authHeaders()});if(!r.ok)throw new Error("LIST "+r.status);
+      var r=await fetch(url,{headers:authHeaders()});if(!r.ok){var et=await r.text();throw new Error("LIST "+r.status+" (auth:"+(window.__AUTH_STATUS||"pending")+") body:"+et.slice(0,300));}
       var d=await r.json();
       (d.documents||[]).forEach(function(doc){var o=d2o(doc);if(o){var id=doc.name.split("/").pop();all.push({_o:o,_id:id});}});
       return{docs:all.map(function(x){return{data:function(){return x._o;},id:x._id};})};
