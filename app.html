@@ -1012,6 +1012,19 @@ const FB_URL="https://firestore.googleapis.com/v1/projects/"+FB_PROJECT+"/databa
 // hit Firestore in the same instant (avoids 429 bursts on live-event days).
 const POLL_MS=9000;
 function pollDelay(){return POLL_MS+Math.floor(Math.random()*4000);}
+// Random 0-4s stagger before the FIRST request too, so a crowd of viewers
+// opening the page at the same moment (e.g. right when results are announced)
+// don't all hit Firestore in the same instant. Only later polls had jitter
+// before; this covers the initial burst that was causing 429s.
+function initialDelay(){return Math.floor(Math.random()*4000);}
+// If Firestore returns 429 (rate limited), back off harder and longer instead
+// of retrying at the normal cadence, which would just keep hitting the limit.
+function nextDelay(err,failCount){
+  if(err&&/429/.test(String(err.message||err))){
+    return Math.min(60000,POLL_MS*Math.pow(2,Math.min(failCount,4)))+Math.floor(Math.random()*4000);
+  }
+  return pollDelay();
+}
 
 function toV(v){
   if(v===null||v===undefined)return{nullValue:null};
@@ -1060,9 +1073,12 @@ function mkRef(col,id){
       if(!r.ok&&r.status!==404)throw new Error("DEL "+r.status);
     },
     onSnapshot:function(cb){
-      var me=this;
-      async function run(){try{var s=await me.get();cb(s);}catch(e){console.warn("dSnap",e);}finally{iv=setTimeout(run,pollDelay());}}
-      var iv;run();return function(){clearTimeout(iv);};
+      var me=this;var fails=0;
+      async function run(){
+        try{var s=await me.get();cb(s);fails=0;iv=setTimeout(run,pollDelay());}
+        catch(e){console.warn("dSnap",e);fails++;iv=setTimeout(run,nextDelay(e,fails));}
+      }
+      var iv;iv=setTimeout(run,initialDelay());return function(){clearTimeout(iv);};
     }
   };
 }
@@ -1077,9 +1093,12 @@ function mkCol(col){
       return{docs:all.map(function(x){return{data:function(){return x._o;},id:x._id};})};
     },
     onSnapshot:function(cb){
-      var me=this;
-      async function run(){try{cb(await me.get());}catch(e){console.warn("snap",e);}finally{iv=setTimeout(run,pollDelay());}}
-      var iv;run();return function(){clearTimeout(iv);};
+      var me=this;var fails=0;
+      async function run(){
+        try{cb(await me.get());fails=0;iv=setTimeout(run,pollDelay());}
+        catch(e){console.warn("snap",e);fails++;iv=setTimeout(run,nextDelay(e,fails));}
+      }
+      var iv;iv=setTimeout(run,initialDelay());return function(){clearTimeout(iv);};
     }
   };
 }
@@ -1180,9 +1199,17 @@ async function loadAll(){
     navGo('s-login');
   }catch(e){
     var isTimeout=e.message&&e.message.indexOf('timed out')>=0;
-    showErr(isTimeout?e.message:'Failed to load: '+e.message+
-      '<br><br>* Most likely fix:<br>Firebase Console -> Firestore Database -> <strong>Rules</strong> -> '+
-      'set <code>allow read, write: if true</code> -> <strong>Publish</strong>');
+    var is429=e.message&&e.message.indexOf('429')>=0;
+    if(isTimeout){showErr(e.message);}
+    else if(is429){
+      showErr('Failed to load: '+e.message+
+        '<br><br>* Too many people opened the page at once (rate limit), not a permissions problem.'+
+        '<br>Please wait a few seconds and tap Retry. It will keep retrying with a longer wait automatically.');
+    }else{
+      showErr('Failed to load: '+e.message+
+        '<br><br>* Most likely fix:<br>Firebase Console -> Firestore Database -> <strong>Rules</strong> -> '+
+        'set <code>allow read, write: if true</code> -> <strong>Publish</strong>');
+    }
   }
 }
 async function seedSchools(){
