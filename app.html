@@ -1008,6 +1008,10 @@ tr:hover td{background:rgba(249,198,66,.04)}
 const FB_PROJECT="bvn-kollam";
 const FB_KEY="AIzaSyBaqcpUqUTaeQuZWVPvOdDDZcNWMO1l9Kk";
 const FB_URL="https://firestore.googleapis.com/v1/projects/"+FB_PROJECT+"/databases/(default)/documents";
+// Base polling interval + random jitter so many simultaneous viewers don't all
+// hit Firestore in the same instant (avoids 429 bursts on live-event days).
+const POLL_MS=9000;
+function pollDelay(){return POLL_MS+Math.floor(Math.random()*4000);}
 
 function toV(v){
   if(v===null||v===undefined)return{nullValue:null};
@@ -1057,8 +1061,8 @@ function mkRef(col,id){
     },
     onSnapshot:function(cb){
       var me=this;
-      async function run(){try{var s=await me.get();cb(s);}catch(e){console.warn("dSnap",e);}}
-      run();var iv=setInterval(run,4000);return function(){clearInterval(iv);};
+      async function run(){try{var s=await me.get();cb(s);}catch(e){console.warn("dSnap",e);}finally{iv=setTimeout(run,pollDelay());}}
+      var iv;run();return function(){clearTimeout(iv);};
     }
   };
 }
@@ -1074,8 +1078,8 @@ function mkCol(col){
     },
     onSnapshot:function(cb){
       var me=this;
-      async function run(){try{cb(await me.get());}catch(e){console.warn("snap",e);}}
-      run();var iv=setInterval(run,4000);return function(){clearInterval(iv);};
+      async function run(){try{cb(await me.get());}catch(e){console.warn("snap",e);}finally{iv=setTimeout(run,pollDelay());}}
+      var iv;run();return function(){clearTimeout(iv);};
     }
   };
 }
