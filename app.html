@@ -1073,10 +1073,15 @@ function mkRef(col,id){
       var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY,{method:"DELETE"});
       if(!r.ok&&r.status!==404)throw new Error("DEL "+r.status);
     },
-    onSnapshot:function(cb){
-      var me=this;var fails=0;
+    onSnapshot:function(cb,mult){
+      var me=this;var fails=0;mult=mult||1;
       async function run(){
-        try{var s=await me.get();cb(s);fails=0;iv=setTimeout(run,pollDelay());}
+        // Skip the network call entirely while the tab/app is backgrounded
+        // (user switched to WhatsApp, locked phone, etc). No point spending
+        // read quota updating a screen nobody is looking at, and with many
+        // simultaneous viewers this alone cuts a large chunk of total reads.
+        if(document.hidden){iv=setTimeout(run,pollDelay()*mult);return;}
+        try{var s=await me.get();cb(s);fails=0;iv=setTimeout(run,pollDelay()*mult);}
         catch(e){console.warn("dSnap",e);fails++;iv=setTimeout(run,nextDelay(e,fails));}
       }
       var iv;iv=setTimeout(run,initialDelay());return function(){clearTimeout(iv);};
@@ -1093,10 +1098,11 @@ function mkCol(col){
       (d.documents||[]).forEach(function(doc){var o=d2o(doc);if(o){var id=doc.name.split("/").pop();all.push({_o:o,_id:id});}});
       return{docs:all.map(function(x){return{data:function(){return x._o;},id:x._id};})};
     },
-    onSnapshot:function(cb){
-      var me=this;var fails=0;
+    onSnapshot:function(cb,mult){
+      var me=this;var fails=0;mult=mult||1;
       async function run(){
-        try{cb(await me.get());fails=0;iv=setTimeout(run,pollDelay());}
+        if(document.hidden){iv=setTimeout(run,pollDelay()*mult);return;}
+        try{cb(await me.get());fails=0;iv=setTimeout(run,pollDelay()*mult);}
         catch(e){console.warn("snap",e);fails++;iv=setTimeout(run,nextDelay(e,fails));}
       }
       var iv;iv=setTimeout(run,initialDelay());return function(){clearTimeout(iv);};
@@ -1239,9 +1245,14 @@ async function seedSchools(){
 }
 function startListeners(){
   unsubs.forEach(function(u){u();});unsubs.length=0;
+  // results/registrations change constantly during a live event, so they
+  // poll at the normal (fast) rate. schools and config barely ever change
+  // once the event starts, so they poll 4x slower (mult=4) - this alone
+  // roughly halves the steady-state read volume across all viewers, which
+  // is what matters when hundreds of phones are polling at once.
   unsubs.push(DB.collection('registrations').onSnapshot(function(s){M.regs=s.docs.map(function(d){return d.data();});refresh();updateStats();}));
   unsubs.push(DB.collection('results').onSnapshot(function(s){M.results=s.docs.map(function(d){return d.data();});refresh();updateStats();if(document.getElementById('s-score').classList.contains('on'))renderScore();}));
-  unsubs.push(DB.collection('schools').onSnapshot(function(s){M.schools=s.docs.map(function(d){return d.data();});fillSelects();updateStats();if(curTab==='t-sch')renderSchools();if(curTab==='t-bib')renderBib();if(curTab==='t-reg')renderRegs();}));
+  unsubs.push(DB.collection('schools').onSnapshot(function(s){M.schools=s.docs.map(function(d){return d.data();});fillSelects();updateStats();if(curTab==='t-sch')renderSchools();if(curTab==='t-bib')renderBib();if(curTab==='t-reg')renderRegs();},4));
   unsubs.push(DB.collection('config').doc('main').onSnapshot(function(s){
     if(!s.exists)return;var d=s.data();
     if(d.events)M.cfg.events=d.events;
@@ -1253,7 +1264,7 @@ function startListeners(){
     if(curTab==='t-oe')renderOE();
     if(curTab==='t-prog')renderProg();
     // t-reg: don't refreshChips on poll - preserves selection
-  }));
+  },3));
 }
 function refresh(){
   if(!USER)return;
