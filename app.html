@@ -1010,19 +1010,18 @@ const FB_KEY="AIzaSyBaqcpUqUTaeQuZWVPvOdDDZcNWMO1l9Kk";
 const FB_URL="https://firestore.googleapis.com/v1/projects/"+FB_PROJECT+"/databases/(default)/documents";
 // Base polling interval + random jitter so many simultaneous viewers don't all
 // hit Firestore in the same instant (avoids 429 bursts on live-event days).
-const POLL_MS=20000;
-function pollDelay(){return POLL_MS+Math.floor(Math.random()*8000);}
-// Random 0-15s stagger before the FIRST request too, so a crowd of viewers
+const POLL_MS=35000;
+function pollDelay(){return POLL_MS+Math.floor(Math.random()*15000);}
+// Random 0-25s stagger before the FIRST request too, so a crowd of viewers
 // opening the page at the same moment (e.g. right when results are announced)
-// don't all hit Firestore in the same instant. Wider window than before
-// because bursts of 50-100+ simultaneous viewers were still tripping 429s
-// with only a 0-4s spread.
-function initialDelay(){return Math.floor(Math.random()*15000);}
+// don't all hit Firestore in the same instant. Widened further (was 0-15s)
+// because bursts of 100+ simultaneous viewers were still tripping 429s.
+function initialDelay(){return Math.floor(Math.random()*25000);}
 // If Firestore returns 429 (rate limited), back off harder and longer instead
 // of retrying at the normal cadence, which would just keep hitting the limit.
 function nextDelay(err,failCount){
   if(err&&/429/.test(String(err.message||err))){
-    return Math.min(90000,POLL_MS*Math.pow(2,Math.min(failCount,4)))+Math.floor(Math.random()*8000);
+    return Math.min(150000,POLL_MS*Math.pow(2,Math.min(failCount,4)))+Math.floor(Math.random()*15000);
   }
   return pollDelay();
 }
@@ -1217,7 +1216,7 @@ async function loadAll(attempt){
     // message claimed ("will keep retrying automatically") but the code
     // never actually did - now it does.
     if(is429&&attempt<5){
-      var wait=Math.min(30000,2000*Math.pow(2,attempt))+Math.floor(Math.random()*3000);
+      var wait=Math.min(45000,3000*Math.pow(2,attempt))+Math.floor(Math.random()*5000);
       setLd('Too many people opened the page at once. Retrying automatically in '+Math.round(wait/1000)+'s...');
       setTimeout(function(){loadAll(attempt+1);},wait);
       return;
