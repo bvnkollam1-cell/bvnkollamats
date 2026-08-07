@@ -1008,6 +1008,67 @@ tr:hover td{background:rgba(249,198,66,.04)}
 const FB_PROJECT="bvn-kollam";
 const FB_KEY="AIzaSyBaqcpUqUTaeQuZWVPvOdDDZcNWMO1l9Kk";
 const FB_URL="https://firestore.googleapis.com/v1/projects/"+FB_PROJECT+"/databases/(default)/documents";
+
+// Anonymous auth - authenticated requests get much higher rate-limit
+// headroom than raw unauthenticated "?key=" calls, which is what was
+// tripping 429s under bursty concurrent load even with quota nowhere
+// near the daily limit. Requires Anonymous sign-in to be enabled once
+// in Firebase Console -> Authentication -> Sign-in method -> Anonymous.
+// If it's not enabled, signInAnon() fails silently and the app falls
+// back to the old unauthenticated calls (no functional loss).
+let AUTH_TOKEN=null;
+// Persist the anon session across reloads. Without this, every single page
+// load/refresh called accounts:signUp again and created a BRAND NEW anonymous
+// user - under repeated testing/reloads this tripped Identity Toolkit's own
+// per-IP abuse rate-limit on account creation, which then made signInAnon()
+// fail and fall back to slower unauthenticated Firestore calls (which then
+// also 429'd). Reusing the saved refresh token avoids creating new accounts.
+const LS_RT="bvnRT",LS_UID="bvnUID";
+async function signInAnon(){
+  try{
+    var savedRt=localStorage.getItem(LS_RT);
+    if(savedRt){
+      var ok=await refreshAnon(savedRt);
+      if(ok)return;
+    }
+    var r=await fetch("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key="+FB_KEY,{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({returnSecureToken:true})
+    });
+    if(!r.ok)throw new Error("auth "+r.status);
+    var d=await r.json();
+    AUTH_TOKEN=d.idToken;
+    try{localStorage.setItem(LS_RT,d.refreshToken);localStorage.setItem(LS_UID,d.localId);}catch(e){}
+    // Anonymous ID tokens expire in ~1hr; refresh a bit early.
+    var refreshMs=(parseInt(d.expiresIn||"3600")-300)*1000;
+    var rt=d.refreshToken;
+    setTimeout(function(){refreshAnon(rt);},Math.max(30000,refreshMs));
+  }catch(e){console.warn("Anon auth unavailable, falling back to unauthenticated calls:",e);}
+}
+async function refreshAnon(refreshToken){
+  try{
+    var r=await fetch("https://securetoken.googleapis.com/v1/token?key="+FB_KEY,{
+      method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:"grant_type=refresh_token&refresh_token="+encodeURIComponent(refreshToken)
+    });
+    if(!r.ok)throw new Error("refresh "+r.status);
+    var d=await r.json();
+    AUTH_TOKEN=d.id_token;
+    try{localStorage.setItem(LS_RT,d.refresh_token);}catch(e){}
+    var refreshMs=(parseInt(d.expires_in||"3600")-300)*1000;
+    setTimeout(function(){refreshAnon(d.refresh_token);},Math.max(30000,refreshMs));
+    return true;
+  }catch(e){
+    console.warn("Anon token refresh failed, clearing saved session:",e);
+    try{localStorage.removeItem(LS_RT);localStorage.removeItem(LS_UID);}catch(e2){}
+    return false;
+  }
+}
+function authHeaders(extra){
+  var h=extra||{};
+  if(AUTH_TOKEN)h["Authorization"]="Bearer "+AUTH_TOKEN;
+  return h;
+}
 // Base polling interval + random jitter so many simultaneous viewers don't all
 // hit Firestore in the same instant (avoids 429 bursts on live-event days).
 const POLL_MS=35000;
@@ -1053,23 +1114,23 @@ function o2f(obj){var f={};Object.keys(obj).forEach(function(k){f[k]=toV(obj[k])
 function mkRef(col,id){
   return{
     get:async function(){
-      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY);
+      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY,{headers:authHeaders()});
       if(r.status===404)return{exists:false,data:function(){return null;}};
       if(!r.ok)throw new Error("GET "+r.status);
       var d=await r.json();var o=d2o(d);
       return{exists:true,data:function(){return o;}};
     },
     set:async function(obj){
-      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:o2f(obj)})});
+      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY,{method:"PATCH",headers:authHeaders({"Content-Type":"application/json"}),body:JSON.stringify({fields:o2f(obj)})});
       if(!r.ok){var e=await r.text();throw new Error("SET: "+e);}
     },
     update:async function(obj){
       var mask=Object.keys(obj).map(function(k){return"updateMask.fieldPaths="+encodeURIComponent(k);}).join("&");
-      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY+"&"+mask,{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:o2f(obj)})});
+      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY+"&"+mask,{method:"PATCH",headers:authHeaders({"Content-Type":"application/json"}),body:JSON.stringify({fields:o2f(obj)})});
       if(!r.ok){var e=await r.text();throw new Error("UPD: "+e);}
     },
     delete:async function(){
-      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY,{method:"DELETE"});
+      var r=await fetch(FB_URL+"/"+col+"/"+id+"?key="+FB_KEY,{method:"DELETE",headers:authHeaders()});
       if(!r.ok&&r.status!==404)throw new Error("DEL "+r.status);
     },
     onSnapshot:function(cb,mult){
@@ -1092,7 +1153,7 @@ function mkCol(col){
     doc:function(id){return mkRef(col,id);},
     get:async function(){
       var all=[];var url=FB_URL+"/"+col+"?key="+FB_KEY+"&pageSize=500";
-      var r=await fetch(url);if(!r.ok)throw new Error("LIST "+r.status);
+      var r=await fetch(url,{headers:authHeaders()});if(!r.ok)throw new Error("LIST "+r.status);
       var d=await r.json();
       (d.documents||[]).forEach(function(doc){var o=d2o(doc);if(o){var id=doc.name.split("/").pop();all.push({_o:o,_id:id});}});
       return{docs:all.map(function(x){return{data:function(){return x._o;},id:x._id};})};
@@ -1169,6 +1230,7 @@ window.onload=function(){
       var o=document.getElementById('overlay');
       if(h&&o&&!o.classList.contains('off'))h.style.display='block';
     },5000);
+    signInAnon();
     // Stagger the very FIRST load too. Without this, every visitor who opens
     // the page in the same instant (e.g. right when results are announced)
     // hits Firestore at exactly the same moment, which is what was causing
