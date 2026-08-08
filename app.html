@@ -1663,28 +1663,53 @@ async function addReg(){
     if(!relay&&existing.length>=1){alert('[X] "'+evt+'" ('+cat+' '+gen+') - Your school already has a student registered.\n\nOnly 1 student per school per event is allowed.');return;}
   }
 
-  // Check if registration is enabled for this school
   var schoolDoc=M.schools.find(function(s){return s.name===USER.school;});
   if(schoolDoc&&schoolDoc.regEnabled===false){
     alert('Registration is DISABLED. Contact district officials.');
     return;
   }
+
   var btn=document.getElementById('addRegBtn');
-  btn.disabled=true;btn.innerHTML='<span>... Saving...</span>';
+  btn.disabled=true;btn.innerHTML='<span>... Syncing...</span>';
+
+  // Keep a complete copy so a failed write can be rolled back safely.
+  var events=[].concat(M.selEvts);
+  var photo=M._photoB64||'';
+  var id=Date.now()*1000+Math.floor(Math.random()*1000);
+  var regNo=genRegNo(USER.school);
+  var newReg={
+    id:id,regNo:regNo,name:name,school:USER.school,
+    dob:dob,class:cls,category:cat,gender:gen,photo:photo,events:events,bib:''
+  };
+
+  // OPTIMISTIC UI: show the registration immediately instead of waiting
+  // for the Firestore network round-trip. onSnapshot will reconcile it
+  // automatically once Firestore acknowledges the write.
+  var oldRegs=M.regs.slice();
+  M.regs.push(newReg);
+  renderRegs();
+  updateStats();
+
+  // Clear the form immediately so the next student can be entered without delay.
+  ['rName','rDOB'].forEach(function(x){document.getElementById(x).value='';});
+  document.getElementById('rClass').value='';
+  document.getElementById('rCat').value='';
+  document.getElementById('rGen').value='';
+  M.selEvts=[];document.getElementById('chips').innerHTML='';clearPhoto();
+  toast('[SYNC] '+name+' added — syncing to cloud...');
+
   try{
-    var id=Date.now();
-    await DB.collection('registrations').doc(String(id)).set({
-      id:id,regNo:genRegNo(USER.school),name:name,school:USER.school,
-      dob:dob,class:cls,category:cat,gender:gen,photo:M._photoB64||'',events:[].concat(M.selEvts),bib:''
-    });
-    ['rName','rDOB'].forEach(function(x){document.getElementById(x).value='';});
-    document.getElementById('rClass').value='';
-    document.getElementById('rCat').value='';
-    document.getElementById('rGen').value='';
-    M.selEvts=[];document.getElementById('chips').innerHTML='';clearPhoto();
-    toast('[OK] '+name+' registered!');
-  }catch(e){alert('[X] Save failed: '+e.message);}
-  finally{btn.disabled=false;btn.innerHTML='+ Add Registration';}
+    await DB.collection('registrations').doc(String(id)).set(newReg);
+    toast('[OK] '+name+' registered & synced!');
+  }catch(e){
+    // Roll back only this optimistic entry if Firestore write really failed.
+    M.regs=oldRegs;
+    renderRegs();
+    updateStats();
+    alert('[X] Save failed: '+e.message+'\n\nThe registration was not stored in Firebase.');
+  }finally{
+    btn.disabled=false;btn.innerHTML='+ Add Registration';
+  }
 }
 function renderRegs(){
   // Update registration status banner
