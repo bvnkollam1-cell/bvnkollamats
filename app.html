@@ -1005,8 +1005,8 @@ tr:hover td{background:rgba(249,198,66,.04)}
 //  FIREBASE CONFIG
 //
 // Firestore REST API - works from ANY domain, no SDK needed
-const FB_PROJECT="bvn-kollam";
-const FB_KEY="AIzaSyBaqcpUqUTaeQuZWVPvOdDDZcNWMO1l9Kk";
+const FB_PROJECT="bvn-athletic-8af45";
+const FB_KEY="AIzaSyBS46g3ITxUPqS4j5LCRWdga-R2JROFUaw";
 const FB_URL="https://firestore.googleapis.com/v1/projects/"+FB_PROJECT+"/databases/(default)/documents";
 
 // Anonymous auth - authenticated requests get much higher rate-limit
@@ -1046,7 +1046,8 @@ async function signInAnon(){
     window.__AUTH_STATUS="ok";
   }catch(e){
     window.__AUTH_STATUS="FAILED: "+e.message;
-    console.error("Anon auth unavailable, falling back to unauthenticated calls:",e);
+    console.error("Anonymous authentication failed:",e);
+    throw e;
   }
 }
 async function refreshAnon(refreshToken){
@@ -1226,7 +1227,7 @@ function closeMenu(){document.getElementById('navLinks').classList.remove('open'
 //
 //  INIT
 //
-window.onload=function(){
+window.onload=async function(){
   try{
     // Show hint after 5s if still loading
     setTimeout(function(){
@@ -1234,13 +1235,25 @@ window.onload=function(){
       var o=document.getElementById('overlay');
       if(h&&o&&!o.classList.contains('off'))h.style.display='block';
     },5000);
-    signInAnon();
-    // Stagger the very FIRST load too. Without this, every visitor who opens
-    // the page in the same instant (e.g. right when results are announced)
-    // hits Firestore at exactly the same moment, which is what was causing
-    // the 429 bursts even though daily quota was nowhere near exceeded.
-    setTimeout(loadAll,Math.floor(Math.random()*8000));
-  }catch(e){showErr('Firebase init error: '+e.message);}
+
+    // IMPORTANT: finish Firebase Anonymous Authentication BEFORE making
+    // any Firestore request. This prevents the first request from going out
+    // unauthenticated and greatly reduces 429/auth bursts.
+    await signInAnon();
+
+    if(!AUTH_TOKEN){
+      showErr('Firebase Anonymous Authentication is not enabled.<br><br>'+
+        'Firebase Console → Authentication → Sign-in method → Anonymous → Enable → Save');
+      return;
+    }
+
+    // Stagger the first Firestore request so many phones opening together
+    // do not create one large burst.
+    setTimeout(function(){loadAll();},Math.floor(Math.random()*8000));
+  }catch(e){
+    showErr('Firebase Authentication failed: '+e.message+
+      '<br><br>* Check Firebase Console → Authentication → Sign-in method → Anonymous → Enabled.');
+  }
 };
 
 async function loadAll(attempt){
