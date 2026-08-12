@@ -385,7 +385,7 @@ tr:hover td{background:rgba(249,198,66,.04)}
 
 /* ═══ LOGIN CARD ══════════════════════════════ */
 .login-center{max-width:440px;margin:0 auto}
-.role-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.role-tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-bottom:20px}
 .role-tab{padding:12px 8px;border:1.5px solid var(--bdr);border-radius:10px;
   cursor:pointer;transition:all .2s;text-align:center;font-size:.8rem;font-weight:600;
   color:var(--txt2);background:transparent;text-transform:none;letter-spacing:0;
@@ -497,8 +497,14 @@ tr:hover td{background:rgba(249,198,66,.04)}
       <button class="role-tab" id="rt-district" onclick="setRole('district')">
         <span class="icon">🏛️</span>District
       </button>
-      <button class="role-tab" id="rt-official" onclick="setRole('official')">
-        <span class="icon">⚖️</span>Official
+      <button class="role-tab" id="rt-trackofficial" onclick="setRole('trackofficial')">
+        <span class="icon">🏃</span>Track Officials
+      </button>
+      <button class="role-tab" id="rt-jumpsofficial" onclick="setRole('jumpsofficial')">
+        <span class="icon">🦘</span>Jumps Officials
+      </button>
+      <button class="role-tab" id="rt-throwsofficial" onclick="setRole('throwsofficial')">
+        <span class="icon">🎯</span>Throws Officials
       </button>
     </div>
     <div id="lSchoolWrap">
@@ -644,6 +650,22 @@ tr:hover td{background:rgba(249,198,66,.04)}
   <!-- ── RESULTS ENTRY ──────────────────────── -->
   <div id="t-res" class="tab-body">
     <div class="sh"><h2>Results <em>Entry</em></h2><span class="sync-pill">☁️ Real-time</span></div>
+    <div id="offProgBox" style="display:none;background:rgba(11,15,26,.5);border:1px solid var(--bdr);border-radius:14px;padding:18px 20px;margin-bottom:18px">
+      <h3 id="offProgTitle" style="font-family:'Cormorant Garant',serif;color:var(--txt);font-size:1.05rem;margin-bottom:12px">Progress</h3>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:14px">
+        <div><span style="font-size:1.5rem;font-weight:700;color:#34d399" id="offProgDone">0</span> <span style="font-size:.8rem;color:var(--txt2)">Completed</span></div>
+        <div><span style="font-size:1.5rem;font-weight:700;color:var(--gold)" id="offProgPending">0</span> <span style="font-size:.8rem;color:var(--txt2)">Balance</span></div>
+        <div><span style="font-size:1.5rem;font-weight:700;color:var(--txt2)" id="offProgTotal">0</span> <span style="font-size:.8rem;color:var(--txt2)">Total</span></div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="font-size:.75rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">✅ Completed</div>
+        <div id="offProgDoneList" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+      <div>
+        <div style="font-size:.75rem;color:var(--txt2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">⏳ Balance</div>
+        <div id="offProgPendingList" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+    </div>
     <div class="g3" style="margin-bottom:14px">
       <div class="form-group">
         <label class="form-label">Category</label>
@@ -877,9 +899,21 @@ tr:hover td{background:rgba(249,198,66,.04)}
           <button class="bw sm w100" onclick="chgSysPass('district')">🔑 Update</button>
         </div>
         <div>
-          <label class="form-label">Official Password</label>
-          <input type="password" id="oPass" placeholder="New password" style="margin-bottom:10px">
-          <button class="bw sm w100" onclick="chgSysPass('official')">🔑 Update</button>
+          <label class="form-label">Track Officials Password</label>
+          <input type="password" id="toPass" placeholder="New password" style="margin-bottom:10px">
+          <button class="bw sm w100" onclick="chgSysPass('trackofficial')">🔑 Update</button>
+        </div>
+      </div>
+      <div class="g2" style="margin-top:10px">
+        <div>
+          <label class="form-label">Jumps Officials Password</label>
+          <input type="password" id="joPass" placeholder="New password" style="margin-bottom:10px">
+          <button class="bw sm w100" onclick="chgSysPass('jumpsofficial')">🔑 Update</button>
+        </div>
+        <div>
+          <label class="form-label">Throws Officials Password</label>
+          <input type="password" id="thoPass" placeholder="New password" style="margin-bottom:10px">
+          <button class="bw sm w100" onclick="chgSysPass('throwsofficial')">🔑 Update</button>
         </div>
       </div>
     </div>
@@ -887,7 +921,9 @@ tr:hover td{background:rgba(249,198,66,.04)}
     <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
       <button class="bg sm" onclick="toggleAllReg(true)">🟢 Enable All Schools</button>
       <button class="bd sm" onclick="toggleAllReg(false)">🔴 Disable All Schools</button>
+      <button class="bw sm" onclick="autoAssignLetters()">🔤 Auto-Assign Relay Letters (A-G)</button>
     </div>
+    <div class="alert al-i" style="margin-bottom:14px">🔤 ഓരോ സ്കൂളിനും A–G ലെറ്റർ കൊടുക്കാം (max 7 letters). Relay result entry-യിൽ officials ഈ ലെറ്റർ select ചെയ്ത് result save ചെയ്യാം.</div>
     <div id="schDisp"></div>
 
     <!-- FULL RESET -->
@@ -1202,8 +1238,8 @@ const M={
       BALA:{Boys:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY'],Girls:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY']},
       KISHORE:{Boys:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY'],Girls:['100m','200m','400m','1500m','Long Jump','High Jump','Shot Put','4x100m RELAY']}
     },
-    passwords:{district:'district@123',official:'official@123'},
-    schoolPasswords:{},bibSeries:{},orderOfEvents:[]
+    passwords:{district:'district@123',official:'official@123',trackofficial:'track@123',jumpsofficial:'jumps@123',throwsofficial:'throws@123'},
+    schoolPasswords:{},bibSeries:{},orderOfEvents:[],schoolLetters:{}
   },
   selEvts:[],PTS:{1:5,2:3,3:1}
 };
@@ -1211,6 +1247,25 @@ let USER=null,curTab='';
 const unsubs=[];
 
 function isRelay(n){return n.toUpperCase().indexOf('RELAY')>=0;}
+// Classifies an event name into one of the 3 official roles.
+function evtType(name){
+  var n=(name||'').toLowerCase();
+  if(n.indexOf('jump')>=0)return'jumpsofficial';
+  if(n.indexOf('put')>=0||n.indexOf('shot')>=0||n.indexOf('throw')>=0||n.indexOf('discus')>=0||n.indexOf('javelin')>=0||n.indexOf('hammer')>=0)return'throwsofficial';
+  return'trackofficial';
+}
+function isOfficialType(t){return t==='trackofficial'||t==='jumpsofficial'||t==='throwsofficial';}
+var OFF_LABELS={trackofficial:'Track Officials',jumpsofficial:'Jumps Officials',throwsofficial:'Throws Officials'};
+// Backfills the 3 official passwords whenever config loads/merges from
+// Firestore (old saved docs only have district/official keys) so old
+// data is never lost and logins keep working.
+function ensureOfficialPasswords(){
+  var p=M.cfg.passwords;if(!p)return;
+  var fb=p.official||'official@123';
+  if(!p.trackofficial)p.trackofficial=fb;
+  if(!p.jumpsofficial)p.jumpsofficial=fb;
+  if(!p.throwsofficial)p.throwsofficial=fb;
+}
 
 //
 //  STICKY NAV
@@ -1276,6 +1331,8 @@ async function loadAll(attempt){
       if(d.schoolPasswords)M.cfg.schoolPasswords=d.schoolPasswords;
       if(d.bibSeries)M.cfg.bibSeries=d.bibSeries;
       if(d.orderOfEvents)M.cfg.orderOfEvents=d.orderOfEvents;
+      if(d.schoolLetters)M.cfg.schoolLetters=d.schoolLetters;
+      ensureOfficialPasswords();
     }else{await DB.collection('config').doc('main').set(M.cfg);}
     setLd('Loading schools...');
     var ss=await DB.collection('schools').get();
@@ -1338,16 +1395,20 @@ function startListeners(){
     if(d.schoolPasswords)M.cfg.schoolPasswords=d.schoolPasswords;
     if(d.bibSeries)M.cfg.bibSeries=d.bibSeries;
     if(d.orderOfEvents)M.cfg.orderOfEvents=d.orderOfEvents;
+    if(d.schoolLetters)M.cfg.schoolLetters=d.schoolLetters;
+    ensureOfficialPasswords();
     if(curTab==='t-evt')renderEvts();
     if(curTab==='t-oe')renderOE();
     if(curTab==='t-prog')renderProg();
+    if(curTab==='t-sch')renderSchools();
+    if(curTab==='t-res')loadParticipants();
     // t-reg: don't refreshChips on poll - preserves selection
   },3));
 }
 function refresh(){
   if(!USER)return;
   if(curTab==='t-reg')renderRegs();
-  if(curTab==='t-res')renderResList();
+  if(curTab==='t-res'){renderResList();updateOfficialProgress();}
   if(curTab==='t-view')viewRes();
   if(curTab==='t-bib')renderBib();
 }
@@ -1425,7 +1486,7 @@ function goTab(id){
     }
   }
   if(id==='t-reg')renderRegs();
-  if(id==='t-res')renderResList();
+  if(id==='t-res'){renderResList();updateOfficialProgress();}
   if(id==='t-view')viewRes();
   if(id==='t-bib')renderBib();
   if(id==='t-evt')renderEvts();
@@ -1460,7 +1521,7 @@ function fillSelects(){
 var loginRole='school';
 function setRole(r){
   loginRole=r;
-  ['school','district','official'].forEach(function(x){
+  ['school','district','trackofficial','jumpsofficial','throwsofficial'].forEach(function(x){
     document.getElementById('rt-'+x).classList.toggle('on',x===r);
   });
   document.getElementById('lSchoolWrap').style.display=(r==='school')?'block':'none';
@@ -1477,7 +1538,7 @@ function doLogin(){
   }
   USER={type:loginRole,school:school};
   var ub=document.getElementById('navUserLabel');
-  ub.textContent=loginRole==='school'?school:loginRole.charAt(0).toUpperCase()+loginRole.slice(1);
+  ub.textContent=loginRole==='school'?school:(loginRole==='district'?'District':OFF_LABELS[loginRole]);
   document.getElementById('navUser').style.display='flex';
   var ml=document.getElementById('mobileLogout');
   ml.style.display='flex';ml.classList.add('show');
@@ -1504,11 +1565,11 @@ function doLogin(){
 
   navGo('s-dash');
   document.querySelectorAll('.school-tab').forEach(function(e){e.style.display=(loginRole==='school')?'block':'none';});
-  document.querySelectorAll('.official-tab').forEach(function(e){e.style.display=(loginRole==='official')?'block':'none';});
+  document.querySelectorAll('.official-tab').forEach(function(e){e.style.display=isOfficialType(loginRole)?'block':'none';});
   document.querySelectorAll('.dist-tab').forEach(function(e){e.style.display=(loginRole==='district')?'block':'none';});
   updateStats();
   if(loginRole==='school')document.querySelector('.school-tab').click();
-  else if(loginRole==='official')document.querySelector('.official-tab').click();
+  else if(isOfficialType(loginRole))document.querySelector('.official-tab').click();
   else document.querySelectorAll('.dist-tab')[0].click();
 }
 function doLogout(){
@@ -1913,23 +1974,72 @@ function updResDD(){
     var evts=[];
     M.regs.filter(function(r){return r.category===cat&&r.gender===gen;})
       .forEach(function(r){r.events.forEach(function(e){if(evts.indexOf(e)<0)evts.push(e);});});
+    if(USER&&isOfficialType(USER.type)){
+      evts=evts.filter(function(e){return evtType(e)===USER.type;});
+    }
     evts.forEach(function(e){sel.innerHTML+='<option value="'+e+'">'+e+'</option>';});
   }
+}
+// Builds the full programme (all categories/genders) filtered to one
+// official type, split into events with a result already saved vs not.
+function officialProgress(type){
+  var items=[];
+  Object.keys(M.cfg.events).forEach(function(cat){
+    ['Boys','Girls'].forEach(function(gen){
+      var evts=(M.cfg.events[cat]&&M.cfg.events[cat][gen])||[];
+      evts.forEach(function(e){
+        if(evtType(e)===type)items.push({cat:cat,gen:gen,evt:e,key:e+'|'+cat+'|'+gen});
+      });
+    });
+  });
+  var doneKeys={};
+  M.results.forEach(function(r){doneKeys[r.event+'|'+r.category+'|'+r.gender]=true;});
+  var done=items.filter(function(i){return doneKeys[i.key];});
+  var pending=items.filter(function(i){return !doneKeys[i.key];});
+  return{done:done,pending:pending,total:items.length};
+}
+function updateOfficialProgress(){
+  var box=document.getElementById('offProgBox');
+  if(!box)return;
+  if(!USER||!isOfficialType(USER.type)){box.style.display='none';return;}
+  box.style.display='block';
+  var p=officialProgress(USER.type);
+  document.getElementById('offProgTitle').textContent=OFF_LABELS[USER.type]+' — Progress';
+  document.getElementById('offProgDone').textContent=p.done.length;
+  document.getElementById('offProgPending').textContent=p.pending.length;
+  document.getElementById('offProgTotal').textContent=p.total;
+  function label(i){return i.evt+' · '+i.cat+' · '+i.gen;}
+  document.getElementById('offProgDoneList').innerHTML=p.done.length
+    ?p.done.map(function(i){return '<span class="bdg bdg-g">'+label(i)+'</span>';}).join(' ')
+    :'<span style="color:var(--txt2);font-size:.82rem">—</span>';
+  document.getElementById('offProgPendingList').innerHTML=p.pending.length
+    ?p.pending.map(function(i){return '<span class="bdg bdg-y">'+label(i)+'</span>';}).join(' ')
+    :'<span style="color:var(--txt2);font-size:.82rem">—</span>';
 }
 function loadParticipants(){
   var cat=document.getElementById('eCat').value,gen=document.getElementById('eGen').value,evt=document.getElementById('eEvt').value;
   [1,2,3].forEach(function(i){document.getElementById('p'+i).innerHTML='<option value="">-- Select --</option>';});
   if(!cat||!gen||!evt)return;
-  var isOfficial=USER&&USER.type==='official';
+  var isOfficial=USER&&isOfficialType(USER.type);
   var ps=M.regs.filter(function(r){return r.category===cat&&r.gender===gen&&r.events.indexOf(evt)>=0;});
   ps.sort(function(a,b){return Number(a.bib||0)-Number(b.bib||0);});
   var opts;
   if(isRelay(evt)){
     var schools={};
     ps.forEach(function(p){if(!schools[p.school])schools[p.school]=[];schools[p.school].push(p);});
-    opts=Object.keys(schools).map(function(sc){
+    var schoolKeys=Object.keys(schools).sort(function(a,b){
+      var la=M.cfg.schoolLetters[a],lb=M.cfg.schoolLetters[b];
+      if(la&&lb)return la.localeCompare(lb);
+      if(la)return -1;
+      if(lb)return 1;
+      return a.localeCompare(b);
+    });
+    opts=schoolKeys.map(function(sc){
       var bibs=schools[sc].map(function(p){return p.bib||'?';}).join(',');
-      var label=isOfficial?'BIB: '+bibs:sc+' ('+bibs+')';
+      var letter=M.cfg.schoolLetters[sc];
+      var label=isOfficial
+        ?(letter?'Team '+letter:'BIB: '+bibs)
+        :((letter?letter+' - ':'')+sc+' ('+bibs+')');
       return'<option value="school:'+sc+'">'+label+'</option>';
     }).join('');
   }else{
@@ -2686,12 +2796,17 @@ async function addSchool(){
 function renderSchools(){
   var con=document.getElementById('schDisp');
   if(!M.schools.length){con.innerHTML='<div class="alert al-w">No schools registered</div>';return;}
-  con.innerHTML='<div class="tbl-wrap"><table><thead><tr><th>#</th><th>School</th><th>Principal</th><th>Contact</th><th>Students</th><th>Registration</th><th>Actions</th></tr></thead>'
+  var letters=['','A','B','C','D','E','F','G'];
+  con.innerHTML='<div class="tbl-wrap"><table><thead><tr><th>#</th><th>School</th><th>Principal</th><th>Contact</th><th>Students</th><th>Relay Letter</th><th>Registration</th><th>Actions</th></tr></thead>'
     +'<tbody>'+M.schools.map(function(s,i){
       var regOn=s.regEnabled!==false;
+      var cur=M.cfg.schoolLetters[s.name]||'';
+      var letterOpts=letters.map(function(l){return '<option value="'+l+'"'+(cur===l?' selected':'')+'>'+(l||'—')+'</option>';}).join('');
+      var safeName=s.name.replace(/'/g,"\\'");
       return'<tr><td>'+(i+1)+'</td><td><strong>'+s.name+'</strong></td>'
         +'<td>'+s.principal+'</td><td>'+s.contact+'</td>'
         +'<td><span class="bdg bdg-y">'+M.regs.filter(function(r){return r.school===s.name;}).length+'</span></td>'
+        +'<td><select style="width:70px;padding:6px 8px" onchange="setSchoolLetter(\''+safeName+'\',this.value)">'+letterOpts+'</select></td>'
         +'<td>'
         +'<button class="'+(regOn?'bg':'bd')+' sm" onclick="toggleReg(\''+s.id+'\','+regOn+')" style="min-width:80px;justify-content:center">'
         +(regOn?'[ON] ON':'[OFF] OFF')
@@ -2703,6 +2818,36 @@ function renderSchools(){
         +'<button class="bd sm" onclick="delSchool('+s.id+')">[DEL]</button>'
         +'</td></tr>';
     }).join('')+'</tbody></table></div>';
+}
+async function setSchoolLetter(schoolName,letter){
+  if(letter){
+    var dupWith=Object.keys(M.cfg.schoolLetters).find(function(sc){return sc!==schoolName&&M.cfg.schoolLetters[sc]===letter;});
+    if(dupWith){alert('[X] Letter '+letter+' is already assigned to "'+dupWith+'"');renderSchools();return;}
+  }
+  var prev=M.cfg.schoolLetters[schoolName];
+  if(letter)M.cfg.schoolLetters[schoolName]=letter;else delete M.cfg.schoolLetters[schoolName];
+  try{
+    await cfgUpdate({schoolLetters:M.cfg.schoolLetters});
+    toast('[OK] Relay letter updated');
+  }catch(e){
+    if(prev)M.cfg.schoolLetters[schoolName]=prev;else delete M.cfg.schoolLetters[schoolName];
+    alert('[X] '+e.message);renderSchools();
+  }
+}
+async function autoAssignLetters(){
+  var letters=['A','B','C','D','E','F','G'];
+  if(M.schools.length>letters.length){
+    if(!confirm('There are '+M.schools.length+' schools but only 7 letters (A-G). Only 7 schools will get a letter. Continue?'))return;
+  }
+  var sorted=M.schools.slice().sort(function(a,b){return a.name.localeCompare(b.name);});
+  var map={};
+  sorted.forEach(function(s,i){if(i<letters.length)map[s.name]=letters[i];});
+  try{
+    M.cfg.schoolLetters=map;
+    await cfgUpdate({schoolLetters:map});
+    toast('[OK] Relay letters (A-G) assigned to all schools');
+    renderSchools();
+  }catch(e){alert('[X] '+e.message);}
 }
 function openEditSchool(schoolId){
   var sch=M.schools.find(function(s){return String(s.id)===String(schoolId);});
@@ -2734,6 +2879,11 @@ async function saveSchoolEdit(schoolId,oldName){
       M.cfg.schoolPasswords[newName]=oldPass;
       delete M.cfg.schoolPasswords[oldName];
       await cfgUpdate({schoolPasswords:M.cfg.schoolPasswords});
+      if(M.cfg.schoolLetters[oldName]){
+        M.cfg.schoolLetters[newName]=M.cfg.schoolLetters[oldName];
+        delete M.cfg.schoolLetters[oldName];
+        await cfgUpdate({schoolLetters:M.cfg.schoolLetters});
+      }
     }
     closeM('editModal');
     toast('[OK] School updated: '+newName);
@@ -2779,7 +2929,8 @@ async function saveSchPass(name){
   }catch(e){alert('[X] '+e.message);}
 }
 async function chgSysPass(type){
-  var id=type==='district'?'dPass':'oPass',p=document.getElementById(id).value;
+  var idMap={district:'dPass',trackofficial:'toPass',jumpsofficial:'joPass',throwsofficial:'thoPass'};
+  var id=idMap[type]||'oPass',p=document.getElementById(id).value;
   if(!p||p.length<4){alert('[!] Minimum 4 characters');return;}
   M.cfg.passwords[type]=p;
   try{var upd={};upd['passwords.'+type]=p;await cfgUpdate(upd);document.getElementById(id).value='';toast('[OK] '+type+' password updated');}catch(e){alert('[X] '+e.message);}
@@ -2791,10 +2942,13 @@ async function delSchool(id){
   try{
     // Remove from local state first
     delete M.cfg.schoolPasswords[sch.name];
+    var hadLetter=!!M.cfg.schoolLetters[sch.name];
+    delete M.cfg.schoolLetters[sch.name];
     // Delete school document
     await DB.collection('schools').doc(String(id)).delete();
     // Write full schoolPasswords object (REST API doesn't support FieldValue.delete)
     await cfgUpdate({schoolPasswords:M.cfg.schoolPasswords});
+    if(hadLetter)await cfgUpdate({schoolLetters:M.cfg.schoolLetters});
     toast('[DEL] '+sch.name+' deleted');
   }catch(e){
     // Rollback local state
