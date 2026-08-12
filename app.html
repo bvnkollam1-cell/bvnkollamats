@@ -2856,12 +2856,12 @@ async function addSchool(){
   if(M.schools.find(function(s){return s.name.toLowerCase()===name.toLowerCase();})){alert('[X] School already exists');return;}
   var id=Date.now();
   try{
-    var upd={};upd['schoolPasswords.'+name]=pass;
     M.cfg.schoolPasswords[name]=pass;
     var batch=DB.batch();
     batch.set(DB.collection('schools').doc(String(id)),{id:id,name:name,principal:prin,contact:cont});
     await batch.commit();
-    await cfgUpdate(upd);
+    // Full object update — dot notation not reliable in REST API
+    await cfgUpdate({schoolPasswords:M.cfg.schoolPasswords});
     ['nSName','nSPrin','nSCont','nSPass'].forEach(function(i){document.getElementById(i).value='';});
     toast('[OK] '+name+' added!');
   }catch(e){alert('[X] '+e.message);}
@@ -3006,7 +3006,11 @@ async function chgSysPass(type){
   var id=idMap[type]||'oPass',p=document.getElementById(id).value;
   if(!p||p.length<4){alert('[!] Minimum 4 characters');return;}
   M.cfg.passwords[type]=p;
-  try{var upd={};upd['passwords.'+type]=p;await cfgUpdate(upd);document.getElementById(id).value='';toast('[OK] '+type+' password updated');}catch(e){alert('[X] '+e.message);}
+  try{
+    // Full object update — dot notation not reliable in REST API
+    await cfgUpdate({passwords:M.cfg.passwords});
+    document.getElementById(id).value='';toast('[OK] '+type+' password updated');
+  }catch(e){alert('[X] '+e.message);}
 }
 async function delSchool(id){
   var sch=M.schools.find(function(s){return s.id===id;});if(!sch)return;
