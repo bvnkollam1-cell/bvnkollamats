@@ -2092,6 +2092,7 @@ function renderResList(){
   Object.keys(groups).sort().forEach(function(k){
     var rs=groups[k].sort(function(a,b){return a.position-b.position;});
     var f=rs[0];
+    var relay=isRelay(f.event);
     var positions={};rs.forEach(function(r){if(!positions[r.position])positions[r.position]=[];positions[r.position].push(r);});
     html+='<div class="res-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">'
       +'<div><strong style="color:var(--gold);font-size:1rem">'+f.event+'</strong> '
@@ -2107,13 +2108,23 @@ function renderResList(){
         html+='<div style="background:rgba(255,255,255,.03);padding:12px;border-radius:10px;opacity:.4">'
           +'<div style="font-size:.75rem;color:var(--txt2)">'+medals[pos-1]+'</div>'
           +'<div style="color:var(--txt2)">-</div></div>';
+      }else if(relay){
+        var reg0=M.regs.find(function(x){return x.id===posRs[0].regId;});
+        var sc=reg0?reg0.school:'';
+        var letter=M.cfg.schoolLetters[sc];
+        html+='<div class="medal-box">'
+          +'<div style="font-size:.75rem;color:var(--txt2);margin-bottom:5px">'+medals[pos-1]+' '+pos+'</div>'
+          +'<div style="font-weight:600;font-size:.88rem;margin-bottom:2px">'+sc+'</div>'
+          +(letter?'<div style="font-size:.78rem;color:var(--txt2);margin-bottom:4px">Team '+letter+'</div>':'')
+          +'<div style="font-weight:700;color:var(--gold)">'+M.PTS[pos]+' pts</div>'
+          +'</div>';
       }else{
         var names=posRs.map(function(r){var reg=M.regs.find(function(x){return x.id===r.regId;});return reg?reg.name:'N/A';});
-        var reg0=M.regs.find(function(x){return x.id===posRs[0].regId;});
+        var reg0b=M.regs.find(function(x){return x.id===posRs[0].regId;});
         html+='<div class="medal-box">'
           +'<div style="font-size:.75rem;color:var(--txt2);margin-bottom:5px">'+medals[pos-1]+' '+pos+'</div>'
           +'<div style="font-weight:600;font-size:.88rem;margin-bottom:2px">'+names.join('<br>')+'</div>'
-          +'<div style="font-size:.78rem;color:var(--txt2);margin-bottom:4px">'+(reg0?reg0.school:'')+'</div>'
+          +'<div style="font-size:.78rem;color:var(--txt2);margin-bottom:4px">'+(reg0b?reg0b.school:'')+'</div>'
           +'<div style="font-weight:700;color:var(--gold)">'+M.PTS[pos]+' pts</div>'
           +'</div>';
       }
@@ -2213,7 +2224,20 @@ function mkResCards(data){
   var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px">';
   Object.keys(groups).sort().forEach(function(k){
     var parts=k.split('||'),cat=parts[0],evtName=parts[1],gen=parts[2];
-    var winners=groups[k].slice().sort(function(a,b){return a.position-b.position;}).slice(0,3);
+    var relay=isRelay(evtName);
+    var sortedRs=groups[k].slice().sort(function(a,b){return a.position-b.position;});
+    var winners;
+    if(relay){
+      // Relay events store one row per team member at the same position;
+      // dedupe down to a single row per position (1st/2nd/3rd).
+      var seenPos={};
+      winners=sortedRs.filter(function(r){
+        if(seenPos[r.position])return false;
+        seenPos[r.position]=true;return true;
+      }).slice(0,3);
+    }else{
+      winners=sortedRs.slice(0,3);
+    }
     var cardId='evtcard-'+k.replace(/[^a-zA-Z0-9]/g,'_');
     html+='<div style="background:rgba(6,16,30,.85);border:1px solid rgba(249,198,66,.25);border-radius:16px;overflow:hidden">';
     // Card header
@@ -2226,19 +2250,33 @@ function mkResCards(data){
     // Winners list
     html+='<div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px">';
     winners.forEach(function(r){
-      var reg=M.regs.find(function(x){return x.id===r.regId;});
       var pos=r.position-1;
-      var photoEl=reg&&reg.photo
-        ?'<img src="'+reg.photo+'" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid '+posColor[pos]+';flex-shrink:0">'
-        :'<div style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid '+posColor[pos]+';display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">\u{1F464}</div>';
-      html+='<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:8px 10px">'
-        +photoEl
-        +'<div style="flex:1;min-width:0">'
-        +'<div style="font-size:.85rem;font-weight:700;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(reg?reg.name:'N/A')+'</div>'
-        +'<div style="font-size:.72rem;color:var(--txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(reg?reg.school:'')+'</div>'
-        +'</div>'
-        +'<span style="font-size:.72rem;font-weight:700;color:'+posColor[pos]+';white-space:nowrap">'+posLabel[pos]+'</span>'
-        +'</div>';
+      if(relay){
+        var reg=M.regs.find(function(x){return x.id===r.regId;});
+        var sc=reg?reg.school:'';
+        var letter=M.cfg.schoolLetters[sc];
+        html+='<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:8px 10px">'
+          +'<div style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid '+posColor[pos]+';display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:800;color:'+posColor[pos]+';flex-shrink:0">'+(letter||'?')+'</div>'
+          +'<div style="flex:1;min-width:0">'
+          +'<div style="font-size:.85rem;font-weight:700;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+sc+'</div>'
+          +(letter?'<div style="font-size:.72rem;color:var(--txt2)">Team '+letter+'</div>':'')
+          +'</div>'
+          +'<span style="font-size:.72rem;font-weight:700;color:'+posColor[pos]+';white-space:nowrap">'+posLabel[pos]+'</span>'
+          +'</div>';
+      }else{
+        var reg2=M.regs.find(function(x){return x.id===r.regId;});
+        var photoEl=reg2&&reg2.photo
+          ?'<img src="'+reg2.photo+'" style="width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid '+posColor[pos]+';flex-shrink:0">'
+          :'<div style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid '+posColor[pos]+';display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0">\u{1F464}</div>';
+        html+='<div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border-radius:10px;padding:8px 10px">'
+          +photoEl
+          +'<div style="flex:1;min-width:0">'
+          +'<div style="font-size:.85rem;font-weight:700;color:#f1f5f9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(reg2?reg2.name:'N/A')+'</div>'
+          +'<div style="font-size:.72rem;color:var(--txt2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(reg2?reg2.school:'')+'</div>'
+          +'</div>'
+          +'<span style="font-size:.72rem;font-weight:700;color:'+posColor[pos]+';white-space:nowrap">'+posLabel[pos]+'</span>'
+          +'</div>';
+      }
     });
     html+='</div>';
     // Download button
@@ -2255,13 +2293,26 @@ function mkResCards(data){
 // ── WHATSAPP STATUS CARD GENERATOR (1080 x 1920) ──────────────────────────
 function dlEvtCard(evtName, cat, gen){
   var W=1080, H=1920;
-  var winners=M.results
+  var relay=isRelay(evtName);
+  var sortedRs=M.results
     .filter(function(r){return r.event===evtName&&r.category===cat&&r.gender===gen;})
-    .sort(function(a,b){return a.position-b.position;}).slice(0,3);
+    .sort(function(a,b){return a.position-b.position;});
+  var winners;
+  if(relay){
+    // Relay events store one row per team member at the same position;
+    // dedupe down to a single row per position (1st/2nd/3rd).
+    var seenPos={};
+    winners=sortedRs.filter(function(r){
+      if(seenPos[r.position])return false;
+      seenPos[r.position]=true;return true;
+    }).slice(0,3);
+  }else{
+    winners=sortedRs.slice(0,3);
+  }
 
-  // Pre-load photos + logo together
+  // Pre-load photos + logo together (skipped for relay - no student photos shown)
   var imgMap={};
-  var photoLoads=winners.map(function(r){
+  var photoLoads=relay?[]:winners.map(function(r){
     var reg=M.regs.find(function(x){return x.id===r.regId;});
     if(!reg||!reg.photo) return Promise.resolve();
     return new Promise(function(res){
@@ -2376,27 +2427,49 @@ function dlEvtCard(evtName, cat, gen){
       txt(posEmoji[idx],cx+59,cy+ch/2-30,58,'#fff');
       txt(posLabel2[idx],cx+59,cy+ch/2+32,22,'rgba(0,0,0,0.7)','center','bold');
 
-      // Photo circle — center at cx+220, radius 86
-      var pr=86, px=cx+118+16+pr, py=cy+ch/2;
-      ctx.save();
-      ctx.beginPath(); ctx.arc(px,py,pr+4,0,Math.PI*2);
-      ctx.strokeStyle=posGrad[idx][0]; ctx.lineWidth=4; ctx.stroke();
-      ctx.beginPath(); ctx.arc(px,py,pr,0,Math.PI*2); ctx.clip();
-      var li=imgMap[r.regId];
-      if(li){
-        ctx.drawImage(li,px-pr,py-pr,pr*2,pr*2);
-      } else {
+      if(relay){
+        // Letter badge circle — center at cx+220, radius 86
+        var letter=M.cfg.schoolLetters[reg.school];
+        var pr=86, px=cx+118+16+pr, py=cy+ch/2;
+        ctx.save();
+        ctx.beginPath(); ctx.arc(px,py,pr+4,0,Math.PI*2);
+        ctx.strokeStyle=posGrad[idx][0]; ctx.lineWidth=4; ctx.stroke();
+        ctx.beginPath(); ctx.arc(px,py,pr,0,Math.PI*2); ctx.clip();
         ctx.fillStyle='rgba(255,255,255,0.07)'; ctx.fill();
-        ctx.font='66px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
-        ctx.fillText('👤',px,py);
-      }
-      ctx.restore();
+        ctx.restore();
+        ctx.save();
+        ctx.font='bold 72px Arial'; ctx.fillStyle=posGrad[idx][0];
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.fillText(letter||'?',px,py);
+        ctx.restore();
 
-      // Text area — starts after photo right edge with gap
-      var tx=px+pr+22, tw2=cw-(tx-cx)-16;
-      txt(reg.name.length>18?reg.name.substring(0,17)+'\u2026':reg.name,tx,cy+ch/2-36,50,'#f1f5f9','left','bold',tw2);
-      txt(reg.school.length>26?reg.school.substring(0,25)+'\u2026':reg.school,tx,cy+ch/2+22,30,'rgba(255,255,255,0.52)','left','normal',tw2);
-      txt('Class '+reg.class,tx,cy+ch/2+62,30,posGrad[idx][0],'left','bold',tw2);
+        // Text area — School name + Team letter only
+        var tx2=px+pr+22, tw3=cw-(tx2-cx)-16;
+        txt(reg.school.length>26?reg.school.substring(0,25)+'\u2026':reg.school,tx2,cy+ch/2-14,44,'#f1f5f9','left','bold',tw3);
+        if(letter)txt('Team '+letter,tx2,cy+ch/2+38,30,posGrad[idx][0],'left','bold',tw3);
+      }else{
+        // Photo circle — center at cx+220, radius 86
+        var pr2=86, px2=cx+118+16+pr2, py2=cy+ch/2;
+        ctx.save();
+        ctx.beginPath(); ctx.arc(px2,py2,pr2+4,0,Math.PI*2);
+        ctx.strokeStyle=posGrad[idx][0]; ctx.lineWidth=4; ctx.stroke();
+        ctx.beginPath(); ctx.arc(px2,py2,pr2,0,Math.PI*2); ctx.clip();
+        var li=imgMap[r.regId];
+        if(li){
+          ctx.drawImage(li,px2-pr2,py2-pr2,pr2*2,pr2*2);
+        } else {
+          ctx.fillStyle='rgba(255,255,255,0.07)'; ctx.fill();
+          ctx.font='66px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+          ctx.fillText('👤',px2,py2);
+        }
+        ctx.restore();
+
+        // Text area — starts after photo right edge with gap
+        var tx=px2+pr2+22, tw2=cw-(tx-cx)-16;
+        txt(reg.name.length>18?reg.name.substring(0,17)+'\u2026':reg.name,tx,cy+ch/2-36,50,'#f1f5f9','left','bold',tw2);
+        txt(reg.school.length>26?reg.school.substring(0,25)+'\u2026':reg.school,tx,cy+ch/2+22,30,'rgba(255,255,255,0.52)','left','normal',tw2);
+        txt('Class '+reg.class,tx,cy+ch/2+62,30,posGrad[idx][0],'left','bold',tw2);
+      }
     });
 
     /* ── FOOTER ── */
