@@ -2179,6 +2179,51 @@ function viewRes(){
   if(gf!=='all')f=f.filter(function(r){return r.gender===gf;});
   document.getElementById('viewDisp').innerHTML=f.length?mkResTable(f):'<div class="alert al-w">No results</div>';
 }
+function mkResTable(data){
+  // Group by event+category+gender, same grouping used elsewhere for results
+  var groups={};
+  data.forEach(function(r){var k=r.event+'|'+r.category+'|'+r.gender;if(!groups[k])groups[k]=[];groups[k].push(r);});
+  var html='';
+  Object.keys(groups).sort().forEach(function(k){
+    var rs=groups[k].slice().sort(function(a,b){return a.position-b.position;});
+    var f=rs[0];
+    var relay=isRelay(f.event);
+    var positions={};rs.forEach(function(r){if(!positions[r.position])positions[r.position]=[];positions[r.position].push(r);});
+    html+='<div class="res-card"><div style="margin-bottom:14px">'
+      +'<strong style="color:var(--gold);font-size:1rem">'+f.event+'</strong> '
+      +'<span class="bdg bdg-y">'+f.category+'</span> <span class="bdg bdg-b">'+f.gender+'</span>'
+      +'</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">';
+    [1,2,3].forEach(function(pos){
+      var posRs=positions[pos]||[];var medals=['1st','2nd','3rd'];
+      if(!posRs.length){
+        html+='<div style="background:rgba(255,255,255,.03);padding:12px;border-radius:10px;opacity:.4">'
+          +'<div style="font-size:.75rem;color:var(--txt2)">'+medals[pos-1]+'</div>'
+          +'<div style="color:var(--txt2)">-</div></div>';
+      }else if(relay){
+        var reg0=M.regs.find(function(x){return x.id===posRs[0].regId;});
+        var sc=reg0?reg0.school:'';
+        var letter=M.cfg.schoolLetters[sc];
+        html+='<div class="medal-box">'
+          +'<div style="font-size:.75rem;color:var(--txt2);margin-bottom:5px">'+medals[pos-1]+' '+pos+'</div>'
+          +'<div style="font-weight:600;font-size:.88rem;margin-bottom:2px">'+sc+'</div>'
+          +(letter?'<div style="font-size:.78rem;color:var(--txt2);margin-bottom:4px">Team '+letter+'</div>':'')
+          +'<div style="font-weight:700;color:var(--gold)">'+M.PTS[pos]+' pts</div>'
+          +'</div>';
+      }else{
+        var names=posRs.map(function(r){var reg=M.regs.find(function(x){return x.id===r.regId;});return reg?reg.name:'N/A';});
+        var reg0b=M.regs.find(function(x){return x.id===posRs[0].regId;});
+        html+='<div class="medal-box">'
+          +'<div style="font-size:.75rem;color:var(--txt2);margin-bottom:5px">'+medals[pos-1]+' '+pos+'</div>'
+          +'<div style="font-weight:600;font-size:.88rem;margin-bottom:2px">'+names.join('<br>')+'</div>'
+          +'<div style="font-size:.78rem;color:var(--txt2);margin-bottom:4px">'+(reg0b?reg0b.school:'')+'</div>'
+          +'<div style="font-weight:700;color:var(--gold)">'+M.PTS[pos]+' pts</div>'
+          +'</div>';
+      }
+    });
+    html+='</div></div>';
+  });
+  return html;
+}
 function pubFilterChange(){
   // Rebuild event dropdown based on cat+gen filter, then reset result display
   var cf=document.getElementById('pubCat').value,gf=document.getElementById('pubGen').value;
